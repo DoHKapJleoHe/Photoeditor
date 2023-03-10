@@ -1,6 +1,8 @@
 package ru.nsu.fit.g20202.vartazaryan;
 
+import lombok.Setter;
 import ru.nsu.fit.g20202.vartazaryan.filters.BlackAndWhiteFilter;
+import ru.nsu.fit.g20202.vartazaryan.filters.NegativeFilter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,12 +25,14 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
     private JScrollPane scrollPane;
     private Point origin;
+    @Setter
     private Filter curFilter;
 
     /*SHOW PARAMETERS*/
     private int showFiltered = 0;
 
     private BlackAndWhiteFilter bwfFilter = new BlackAndWhiteFilter();
+    private NegativeFilter negFilter = new NegativeFilter();
 
     public ImagePane(JScrollPane sp)
     {
@@ -40,13 +44,26 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
     }
 
-    public void applyBlackAndWhite()
+    public void applyFilter()
     {
         if(originalImage != null)
         {
-            curFilter = Filter.BLACK_WHITE_FILTER;
-            filteredImage = bwfFilter.applyFilter(originalImage);
-            showFiltered = 1;
+            switch (curFilter)
+            {
+                case BLACK_WHITE_FILTER -> {
+                    filteredImage = bwfFilter.applyFilter(originalImage);
+                    showFiltered = 1;
+
+                    break;
+                }
+
+                case NEGATIVE_FILTER -> {
+                    filteredImage = negFilter.applyFilter(originalImage);
+                    showFiltered = 1;
+
+                    break;
+                }
+            }
 
             repaint();
         }

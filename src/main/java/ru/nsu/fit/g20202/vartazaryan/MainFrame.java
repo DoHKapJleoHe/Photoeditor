@@ -17,6 +17,7 @@ public class MainFrame extends JFrame
     private JToolBar toolBar;
     private JButton loadButton;
     private JButton blackWhite;
+    private JButton negative;
     private JButton returnButton;
 
 
@@ -33,6 +34,7 @@ public class MainFrame extends JFrame
         ImageIcon blackWhiteIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/black&white.png")));
         ImageIcon loadIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/load.png")));
         ImageIcon backIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/back.png")));
+        ImageIcon negativeIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/negative.png")));
         /*-----*/
 
         /*IMAGE FIELD*/
@@ -54,6 +56,9 @@ public class MainFrame extends JFrame
 
         blackWhite = createButton("BWF", blackWhiteIcon);
         toolBar.add(blackWhite);
+
+        negative = createButton("Negative", negativeIcon);
+        toolBar.add(negative);
 
         returnButton = createButton("Return", backIcon);
         toolBar.add(returnButton);
@@ -102,11 +107,17 @@ public class MainFrame extends JFrame
         });
 
         blackWhite.addActionListener(e -> {
-            imagePane.applyBlackAndWhite();
+            imagePane.setCurFilter(ImagePane.Filter.BLACK_WHITE_FILTER);
+            imagePane.applyFilter();
         });
 
         returnButton.addActionListener(e -> {
             imagePane.showOriginalImage();
+        });
+
+        negative.addActionListener(e -> {
+            imagePane.setCurFilter(ImagePane.Filter.NEGATIVE_FILTER);
+            imagePane.applyFilter();
         });
     }
 
