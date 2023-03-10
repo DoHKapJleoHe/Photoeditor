@@ -1,7 +1,9 @@
 package ru.nsu.fit.g20202.vartazaryan;
 
+import lombok.Getter;
 import lombok.Setter;
 import ru.nsu.fit.g20202.vartazaryan.filters.BlackAndWhiteFilter;
+import ru.nsu.fit.g20202.vartazaryan.filters.GammaCorrection;
 import ru.nsu.fit.g20202.vartazaryan.filters.NegativeFilter;
 
 import javax.swing.*;
@@ -16,6 +18,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     private static final int INDENT = 4;
 
     private BufferedImage originalImage;
+    @Getter
     private BufferedImage filteredImage;
 
     private Graphics2D g2d;
@@ -33,6 +36,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
     private BlackAndWhiteFilter bwfFilter = new BlackAndWhiteFilter();
     private NegativeFilter negFilter = new NegativeFilter();
+    private GammaCorrection gammaCorrector = new GammaCorrection();
 
     public ImagePane(JScrollPane sp)
     {
@@ -63,6 +67,13 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
                     break;
                 }
+
+                case GAMMA_CORRECTOR -> {
+                    filteredImage = gammaCorrector.applyFilter(originalImage);
+                    showFiltered = 1;
+
+                    break;
+                }
             }
 
             repaint();
@@ -85,6 +96,11 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         repaint();
     }
 
+    public void updateGammaOptions(int gamma)
+    {
+        gammaCorrector.setGamma((double)gamma/10);
+    }
+
     public void showOriginalImage()
     {
         if(filteredImage != null)
@@ -95,7 +111,6 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         else
         {
             JOptionPane.showMessageDialog(this, "Image has not been filtered yet!", "Error", JOptionPane.QUESTION_MESSAGE);
-
         }
     }
 
@@ -153,6 +168,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
     enum Filter{
         BLACK_WHITE_FILTER,
-        NEGATIVE_FILTER
+        NEGATIVE_FILTER,
+        GAMMA_CORRECTOR
     }
 }
