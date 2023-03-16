@@ -1,13 +1,19 @@
 package ru.nsu.fit.g20202.vartazaryan;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
+import ru.nsu.fit.g20202.vartazaryan.options.RotateOption;
+import ru.nsu.fit.g20202.vartazaryan.view.*;
+import ru.nsu.fit.g20202.vartazaryan.view.MenuBar;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
@@ -15,90 +21,76 @@ public class MainFrame extends JFrame
 {
     private ImagePane imagePane;
     private JScrollPane imageScrollPane;
-    private GammaOptions gammaOptions = new GammaOptions();
+    private GammaOptions gammaOptions;
+    private RotateOption rotateOptions;
+    private BottomPanel bottomOptions;
 
-    private JToolBar toolBar;
-    private JButton loadButton;
-    private JButton blackWhite;
-    private JButton negative;
-    private JButton gammaCorrection;
-    private JButton returnButton;
+    private ToolBar toolBar;
+    private MenuBar menu;
 
-
-    private JMenuBar menu;
-    private JMenu file;
-    private JMenu edit;
-
-
+    private JPopupMenu popupMenu;
 
     public MainFrame() throws IOException
     {
-        super("ARAEditor");
+        setTitle();
+        FlatLightLaf.setup();
 
+        ImageIcon icon = new ImageIcon(ImageIO.read(new File("src/main/recources/AppIcon.png")));
+        setIconImage(icon.getImage());
+
+        getContentPane().setBackground(Color.DARK_GRAY);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setBounds(400, 100, 640, 480);
         setMinimumSize(new Dimension(640, 480));
-        setVisible(true);
 
-        /*ICONS*/
-        ImageIcon blackWhiteIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/black&white.png")));
-        ImageIcon loadIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/load.png")));
-        ImageIcon backIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/back.png")));
-        ImageIcon negativeIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/negative.png")));
-        ImageIcon gammaIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/gamma.png")));
-        /*-----*/
-
-        /*IMAGE FIELD*/
         imageScrollPane = new JScrollPane();
         imagePane = new ImagePane(imageScrollPane);
         imagePane.setVisible(true);
         add(imageScrollPane);
-        /*-----------*/
 
-        /*TOOL BAR*/
-        toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.setRollover(false);
-        toolBar.setVisible(true);
+        LoadImage loadImage = new LoadImage(imagePane);
+        SaveImage saveImage = new SaveImage(imagePane);
+
+        toolBar = new ToolBar(imagePane, loadImage, saveImage);
         add(toolBar, BorderLayout.NORTH);
 
-        loadButton = createButton("Load", loadIcon);
-        toolBar.add(loadButton);
-
-        blackWhite = createButton("BWF", blackWhiteIcon);
-        toolBar.add(blackWhite);
-
-        negative = createButton("Negative", negativeIcon);
-        toolBar.add(negative);
-
-        gammaCorrection = createButton("Gamma", gammaIcon);
-        toolBar.add(gammaCorrection);
-
-        returnButton = createButton("Return", backIcon);
-        toolBar.add(returnButton);
-        /*--------*/
-
-        /*MENU BAR*/
-        menu = new JMenuBar();
+        menu = new MenuBar(imagePane, loadImage, saveImage);
         setJMenuBar(menu);
 
-        file = new JMenu("File");
-        menu.add(file);
-        JMenuItem saveItem = new JMenuItem("Save");
-        file.add(saveItem);
+        rotateOptions = new RotateOption(imagePane);
 
-        JMenuItem loadItem = new JMenuItem("Load");
-        file.add(loadItem);
+        bottomOptions = new BottomPanel(imagePane);
+        add(bottomOptions, BorderLayout.SOUTH);
 
-        JMenuItem exitItem = new JMenuItem("Exit");
-        file.add(exitItem);
 
-        edit = new JMenu("Edit");
-        menu.add(edit);
+        /*THEMES*/
+        ButtonGroup themesGroup = new ButtonGroup();
 
-        JMenuItem gamma = new JMenuItem("Gamma");
-        edit.add(gamma);
-        /*--------*/
+        JMenu view = new JMenu("View");
+        menu.add(view);
+
+        JMenu themes = new JMenu("Theme");
+        view.add(themes);
+
+        JRadioButtonMenuItem whiteTheme = new JRadioButtonMenuItem("White");
+        JRadioButtonMenuItem darculaTheme = new JRadioButtonMenuItem("Darcula");
+
+        themesGroup.add(whiteTheme);
+        themesGroup.add(darculaTheme);
+
+        themes.add(whiteTheme);
+        themes.add(darculaTheme);
+
+        whiteTheme.addActionListener(e -> {
+            FlatLightLaf.setup();
+            SwingUtilities.updateComponentTreeUI(this);
+        });
+
+        darculaTheme.addActionListener(e -> {
+            FlatDarculaLaf.setup();
+            SwingUtilities.updateComponentTreeUI(this);
+        });
+        /*------*/
 
         /*ACTION LISTENERS*/
         this.addWindowListener(new WindowAdapter() {
@@ -113,121 +105,31 @@ public class MainFrame extends JFrame
             }
         });
 
-
-
-        loadButton.addActionListener(e -> {
-            loadImage();
-        });
-
-        blackWhite.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.BLACK_WHITE_FILTER);
-            imagePane.applyFilter();
-        });
-
-        returnButton.addActionListener(e -> {
-            imagePane.showOriginalImage();
-        });
-
-        negative.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.NEGATIVE_FILTER);
-            imagePane.applyFilter();
-        });
-
-        gammaCorrection.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.GAMMA_CORRECTOR);
-            imagePane.applyFilter();
-        });
-
-        loadItem.addActionListener(e -> {
-            loadImage();
-        });
-
-        saveItem.addActionListener(e -> {
-            saveImage();
-        });
-
-        exitItem.addActionListener(e -> {System.exit(0);});
-
-        gamma.addActionListener(e -> {
-            int confirm = JOptionPane.showConfirmDialog(
-                    this,
-                    gammaOptions,
-                    "Gamma options",
-                    JOptionPane.OK_CANCEL_OPTION
-            );
-
-            if(JOptionPane.OK_OPTION == confirm)
+        MouseAdapter click = new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e)
             {
-                imagePane.updateGammaOptions(gammaOptions.getGammaValue());
+                if (e.isPopupTrigger())
+                {
+                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
+                }
             }
-        });
+        };
+
+        imagePane.addMouseListener(click);
 
         pack();
+        setVisible(true);
     }
 
-    private JButton createButton(String buttonName, ImageIcon icon)
+    private void setTitle()
     {
-        JButton newButton = new JButton(icon);
-        newButton.setFocusPainted(false);
+        Font font = this.getFont();
 
-        return newButton;
-    }
+        String currentTitle = "PhotoEditor";
 
-    private void saveImage() {
-        FileDialog save = new FileDialog(this, "Сохранить изображение", FileDialog.SAVE);
-        save.setVisible(true);
+        this.setTitle(currentTitle);
 
-        String image = save.getFile();
-        String dir = save.getDirectory();
-        String name = dir + image + ".png";
-
-        File file = new File(name);
-        try
-        {
-            if(image != null)
-            {
-                ImageIO.write(imagePane.getFilteredImage(), "png", file);
-            }
-            else
-            {
-                JOptionPane.showMessageDialog(this, "Please, name your image!", "Error", JOptionPane.QUESTION_MESSAGE);
-            }
-
-        }
-        catch (IOException ioe)
-        {
-            ioe.printStackTrace();
-        }
-    }
-
-    private void loadImage()
-    {
-        FileDialog loadFile = new FileDialog(this,"Load Image", FileDialog.LOAD);
-        loadFile.setFile("*.png; *.jpg; *.jpeg;");
-
-        loadFile.setVisible(true);
-        String image = loadFile.getFile();
-        String dir = loadFile.getDirectory();
-        String file = dir + image;
-
-        System.out.println("File name is "+file);
-
-        if(image != null)
-        {
-            try
-            {
-                BufferedImage newImage = ImageIO.read(new File(file));
-                imagePane.setImage(newImage);
-            }
-            catch (IOException ioe)
-            {
-                ioe.printStackTrace();
-            }
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(this, "Image has not been selected!", "Error", JOptionPane.QUESTION_MESSAGE);
-        }
     }
 
     public static void main(String[] args) throws IOException

@@ -9,6 +9,14 @@ public class BlackAndWhiteFilter implements IFilter
     private static final double GREEN_COEFICIENT = 0.587;
     private static final double BLUE_COEFICIENT = 0.114;
 
+    /**
+     *  This method returns color in pixel in TYPE_INT_ARGB. Color is 32-bit number:
+     *
+     *  <br>bits 0 - 7 : blue chanel
+     *  <br>bits 8 - 15 : green chanel
+     *  <br>bits 16 - 23 : red chanel
+     *  <br>bits 24 - 31 : alpha chanel (transparency)
+     */
     @Override
     public BufferedImage applyFilter(BufferedImage curImage)
     {
@@ -18,13 +26,6 @@ public class BlackAndWhiteFilter implements IFilter
         {
             for(int y = 0; y < curImage.getHeight(); y++)
             {
-                /*
-                *  This method returns color in pixel in TYPE_INT_ARGB. Color is 32-bit number:
-                *  bits 0 - 7 : blue chanel
-                *  bits 8 - 15 : green chanel
-                *  bits 16 - 23 : red chanel
-                *  bits 24 - 31 : alpha chanel (transparency)
-                */
                 int curColor = curImage.getRGB(x, y);
 
                 int red = (curColor >> 16) & 0xFF;

@@ -1,10 +1,14 @@
 package ru.nsu.fit.g20202.vartazaryan;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
+import com.formdev.flatlaf.FlatLightLaf;
 import lombok.Getter;
 import lombok.Setter;
 import ru.nsu.fit.g20202.vartazaryan.filters.BlackAndWhiteFilter;
 import ru.nsu.fit.g20202.vartazaryan.filters.GammaCorrection;
 import ru.nsu.fit.g20202.vartazaryan.filters.NegativeFilter;
+import ru.nsu.fit.g20202.vartazaryan.instruments.RotateInstrument;
+import ru.nsu.fit.g20202.vartazaryan.instruments.Zoom;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,9 +38,16 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     /*SHOW PARAMETERS*/
     private int showFiltered = 0;
 
+    /*FILTERS*/
     private BlackAndWhiteFilter bwfFilter = new BlackAndWhiteFilter();
     private NegativeFilter negFilter = new NegativeFilter();
     private GammaCorrection gammaCorrector = new GammaCorrection();
+
+    /*INSTRUMENTS*/
+    private RotateInstrument rotateInstrument = new RotateInstrument();
+    private Zoom zoom = new Zoom();
+
+    private JLabel label;
 
     public ImagePane(JScrollPane sp)
     {
@@ -46,6 +57,8 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
                 BorderFactory.createEmptyBorder(INDENT, INDENT, INDENT, INDENT), // this creates indent between frame and image area
                 BorderFactory.createDashedBorder(Color.BLACK, 5, 2)));
 
+        label = new JLabel("Place for image");
+        add(label);
     }
 
     public void applyFilter()
@@ -57,22 +70,16 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
                 case BLACK_WHITE_FILTER -> {
                     filteredImage = bwfFilter.applyFilter(originalImage);
                     showFiltered = 1;
-
-                    break;
                 }
 
                 case NEGATIVE_FILTER -> {
                     filteredImage = negFilter.applyFilter(originalImage);
                     showFiltered = 1;
-
-                    break;
                 }
 
                 case GAMMA_CORRECTOR -> {
                     filteredImage = gammaCorrector.applyFilter(originalImage);
                     showFiltered = 1;
-
-                    break;
                 }
             }
 
@@ -84,8 +91,10 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         }
     }
 
-    public void setImage(BufferedImage newImage)
+    public void setOriginalImage(BufferedImage newImage)
     {
+        label.setVisible(false);
+
         originalImage = newImage;
         g2d = newImage.createGraphics();
 
@@ -96,9 +105,20 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         repaint();
     }
 
+    public BufferedImage getOriginalImage() {
+        return originalImage;
+    }
+
     public void updateGammaOptions(int gamma)
     {
         gammaCorrector.setGamma((double)gamma/10);
+
+        if(originalImage != null)
+        {
+            filteredImage = gammaCorrector.applyFilter(originalImage);
+            showFiltered = 1;
+            repaint();
+        }
     }
 
     public void showOriginalImage()
@@ -112,6 +132,25 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         {
             JOptionPane.showMessageDialog(this, "Image has not been filtered yet!", "Error", JOptionPane.QUESTION_MESSAGE);
         }
+    }
+
+    public void rotateImage(int degree)
+    {
+        if(originalImage != null)
+        {
+            rotateInstrument.setDegree(degree);
+            originalImage = rotateInstrument.apply(originalImage);
+            showFiltered = 0;
+            repaint();
+        }
+
+    }
+
+    public void zoomImage(int zoomCoef)
+    {
+        zoom.setZoomCoef(zoomCoef);
+        originalImage = zoom.apply(originalImage);
+        repaint();
     }
 
     @Override
@@ -166,7 +205,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
     }
 
-    enum Filter{
+    public enum Filter{
         BLACK_WHITE_FILTER,
         NEGATIVE_FILTER,
         GAMMA_CORRECTOR

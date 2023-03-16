@@ -4,8 +4,5 @@ import java.awt.image.BufferedImage;
 
 public interface IFilter
 {
-    default BufferedImage applyFilter(BufferedImage image)
-    {
-        return null;
-    }
+    BufferedImage applyFilter(BufferedImage image);
 }
