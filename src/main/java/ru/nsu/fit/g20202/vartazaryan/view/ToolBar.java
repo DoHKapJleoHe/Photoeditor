@@ -21,6 +21,8 @@ public class ToolBar extends JToolBar
     private JButton blackWhite;
     private JButton negative;
     private JButton gammaCorrection;
+    private JButton contouring;
+    private JButton sepia;
     private JButton rotateButton;
     private JButton returnButton;
 
@@ -43,23 +45,31 @@ public class ToolBar extends JToolBar
         ImageIcon negativeIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/negative.png")));
         ImageIcon gammaIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/gamma.png")));
         ImageIcon rotateIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/rotate.png")));
+        ImageIcon contourIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/contour.png")));
+        ImageIcon sepiaIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/sepia.png")));
 
-        loadButton = createButton("Load", loadIcon);
+        loadButton = createButton("Load Image", loadIcon);
         add(loadButton);
 
-        saveButton = createButton("Save", saveIcon);
+        saveButton = createButton("Save Image", saveIcon);
         add(saveButton);
 
         add(new JSeparator(SwingConstants.VERTICAL));
 
-        blackWhite = createButton("BWF", blackWhiteIcon);
+        blackWhite = createButton("Black-White Filter", blackWhiteIcon);
         add(blackWhite);
 
-        negative = createButton("Negative", negativeIcon);
+        negative = createButton("Negative Filter", negativeIcon);
         add(negative);
 
-        gammaCorrection = createButton("Gamma", gammaIcon);
+        gammaCorrection = createButton("Gamma Correction", gammaIcon);
         add(gammaCorrection);
+
+        contouring = createButton("Contouring Filter", contourIcon);
+        add(contouring);
+
+        sepia = createButton("Sepia Filter", sepiaIcon);
+        add(sepia);
 
         add(new JSeparator(SwingConstants.VERTICAL));
 
@@ -106,11 +116,22 @@ public class ToolBar extends JToolBar
             imagePane.setCurFilter(ImagePane.Filter.GAMMA_CORRECTOR);
             imagePane.applyFilter();
         });
+
+        contouring.addActionListener(e -> {
+            imagePane.setCurFilter(ImagePane.Filter.CONTOURING_FILTER);
+            imagePane.applyFilter();
+        });
+
+        sepia.addActionListener(e -> {
+            imagePane.setCurFilter(ImagePane.Filter.SEPIA_FILTER);
+            imagePane.applyFilter();
+        });
     }
 
     private JButton createButton(String buttonName, ImageIcon icon)
     {
         JButton newButton = new JButton(icon);
+        newButton.setToolTipText(buttonName);
         newButton.setFocusPainted(false);
 
         return newButton;

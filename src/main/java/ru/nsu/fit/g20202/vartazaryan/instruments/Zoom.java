@@ -5,18 +5,15 @@ import lombok.Setter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public class Zoom implements Instrument
+public class Zoom
 {
     @Setter
     private int zoomCoef = 100;
 
-    @Override
-    public BufferedImage apply(BufferedImage image)
+    public BufferedImage apply(BufferedImage image, int width, int height)
     {
-        int newWidth = (image.getWidth() * zoomCoef) / 100;
-        int newHeight = (image.getHeight() * zoomCoef) / 100;
-
-        //System.out.println("New width = "+newWidth+" "+"New height = "+" "+newHeight);
+        int newWidth = (width * zoomCoef) / 100;
+        int newHeight = (height * zoomCoef) / 100;
 
         BufferedImage newImage = new BufferedImage(newWidth, newHeight, image.getType());
         Graphics2D g = newImage.createGraphics();

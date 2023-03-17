@@ -1,12 +1,8 @@
 package ru.nsu.fit.g20202.vartazaryan;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import lombok.Getter;
 import lombok.Setter;
-import ru.nsu.fit.g20202.vartazaryan.filters.BlackAndWhiteFilter;
-import ru.nsu.fit.g20202.vartazaryan.filters.GammaCorrection;
-import ru.nsu.fit.g20202.vartazaryan.filters.NegativeFilter;
+import ru.nsu.fit.g20202.vartazaryan.filters.*;
 import ru.nsu.fit.g20202.vartazaryan.instruments.RotateInstrument;
 import ru.nsu.fit.g20202.vartazaryan.instruments.Zoom;
 
@@ -22,6 +18,9 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     private static final int INDENT = 4;
 
     private BufferedImage originalImage;
+    private int originalImageWidth;
+    private int originalImageHeight;
+
     @Getter
     private BufferedImage filteredImage;
 
@@ -42,6 +41,8 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     private BlackAndWhiteFilter bwfFilter = new BlackAndWhiteFilter();
     private NegativeFilter negFilter = new NegativeFilter();
     private GammaCorrection gammaCorrector = new GammaCorrection();
+    private ContouringFilter contouringFilter = new ContouringFilter();
+    private SepiaFilter sepiaFilter = new SepiaFilter();
 
     /*INSTRUMENTS*/
     private RotateInstrument rotateInstrument = new RotateInstrument();
@@ -81,6 +82,16 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
                     filteredImage = gammaCorrector.applyFilter(originalImage);
                     showFiltered = 1;
                 }
+
+                case CONTOURING_FILTER -> {
+                    filteredImage = contouringFilter.applyFilter(originalImage);
+                    showFiltered = 1;
+                }
+
+                case SEPIA_FILTER -> {
+                    filteredImage = sepiaFilter.applyFilter(originalImage);
+                    showFiltered = 1;
+                }
             }
 
             repaint();
@@ -101,6 +112,9 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         width = newImage.getWidth();
         height = newImage.getHeight();
         setPreferredSize(new Dimension(width, height));
+
+        originalImageWidth = width;
+        originalImageHeight = height;
 
         repaint();
     }
@@ -148,9 +162,19 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
     public void zoomImage(int zoomCoef)
     {
+        // bugged, needs fixes
         zoom.setZoomCoef(zoomCoef);
-        originalImage = zoom.apply(originalImage);
-        repaint();
+        if(showFiltered == 0)
+        {
+            filteredImage = zoom.apply(originalImage, originalImageWidth, originalImageHeight);
+            showFiltered = 1;
+            repaint();
+        }
+        else
+        {
+            filteredImage = zoom.apply(filteredImage, originalImageWidth, originalImageHeight);
+            repaint();
+        }
     }
 
     @Override
@@ -208,6 +232,8 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     public enum Filter{
         BLACK_WHITE_FILTER,
         NEGATIVE_FILTER,
-        GAMMA_CORRECTOR
+        GAMMA_CORRECTOR,
+        CONTOURING_FILTER,
+        SEPIA_FILTER
     }
 }

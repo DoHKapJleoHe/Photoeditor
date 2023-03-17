@@ -34,6 +34,7 @@ public class MainFrame extends JFrame
     {
         setTitle();
         FlatLightLaf.setup();
+        SwingUtilities.updateComponentTreeUI(this);
 
         ImageIcon icon = new ImageIcon(ImageIO.read(new File("src/main/recources/AppIcon.png")));
         setIconImage(icon.getImage());
@@ -61,7 +62,6 @@ public class MainFrame extends JFrame
 
         bottomOptions = new BottomPanel(imagePane);
         add(bottomOptions, BorderLayout.SOUTH);
-
 
         /*THEMES*/
         ButtonGroup themesGroup = new ButtonGroup();
