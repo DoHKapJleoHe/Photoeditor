@@ -42,6 +42,16 @@ public class MenuBar extends JMenuBar
         JMenuItem gamma = new JMenuItem("Gamma");
         edit.add(gamma);
 
+        ButtonGroup operatorsGroup = new ButtonGroup();
+        JMenu contouring = new JMenu("Contouring");
+        edit.add(contouring);
+        JRadioButtonMenuItem sobel = new JRadioButtonMenuItem("Sobel");
+        JRadioButtonMenuItem robert = new JRadioButtonMenuItem("Robert");
+        contouring.add(sobel);
+        contouring.add(robert);
+        operatorsGroup.add(sobel);
+        operatorsGroup.add(robert);
+
         loadItem.addActionListener(e -> {
             try
             {

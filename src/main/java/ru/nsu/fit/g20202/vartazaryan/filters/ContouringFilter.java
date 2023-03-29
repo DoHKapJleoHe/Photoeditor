@@ -1,9 +1,12 @@
 package ru.nsu.fit.g20202.vartazaryan.filters;
 
+import lombok.Setter;
+
 import java.awt.image.BufferedImage;
 
 public class ContouringFilter implements IFilter
 {
+    @Setter
     private int treshold  = 20;
 
     private BufferedImage oldImage;

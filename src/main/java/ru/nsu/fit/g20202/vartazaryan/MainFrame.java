@@ -32,7 +32,7 @@ public class MainFrame extends JFrame
 
     public MainFrame() throws IOException
     {
-        setTitle();
+        super("PhotoEditor");
         FlatLightLaf.setup();
         SwingUtilities.updateComponentTreeUI(this);
 
@@ -120,16 +120,6 @@ public class MainFrame extends JFrame
 
         pack();
         setVisible(true);
-    }
-
-    private void setTitle()
-    {
-        Font font = this.getFont();
-
-        String currentTitle = "PhotoEditor";
-
-        this.setTitle(currentTitle);
-
     }
 
     public static void main(String[] args) throws IOException

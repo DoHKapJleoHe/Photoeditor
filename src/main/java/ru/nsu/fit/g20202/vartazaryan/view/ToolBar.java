@@ -23,6 +23,8 @@ public class ToolBar extends JToolBar
     private JButton gammaCorrection;
     private JButton contouring;
     private JButton sepia;
+    private JButton embossing;
+    private JButton dithering;
     private JButton rotateButton;
     private JButton returnButton;
 
@@ -47,6 +49,9 @@ public class ToolBar extends JToolBar
         ImageIcon rotateIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/rotate.png")));
         ImageIcon contourIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/contour.png")));
         ImageIcon sepiaIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/sepia.png")));
+        ImageIcon embossingIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/embossing.png")));
+        ImageIcon ditheringIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/dithering.png")));
+
 
         loadButton = createButton("Load Image", loadIcon);
         add(loadButton);
@@ -70,6 +75,12 @@ public class ToolBar extends JToolBar
 
         sepia = createButton("Sepia Filter", sepiaIcon);
         add(sepia);
+
+        embossing = createButton("Embossing Filter", embossingIcon);
+        add(embossing);
+
+        dithering = createButton("Dithering", ditheringIcon);
+        add(dithering);
 
         add(new JSeparator(SwingConstants.VERTICAL));
 
@@ -124,6 +135,16 @@ public class ToolBar extends JToolBar
 
         sepia.addActionListener(e -> {
             imagePane.setCurFilter(ImagePane.Filter.SEPIA_FILTER);
+            imagePane.applyFilter();
+        });
+
+        embossing.addActionListener(e -> {
+            imagePane.setCurFilter(ImagePane.Filter.EMBOSSING_FILTER);
+            imagePane.applyFilter();
+        });
+
+        dithering.addActionListener(e -> {
+            imagePane.setCurFilter(ImagePane.Filter.FLOYD_DITHERING);
             imagePane.applyFilter();
         });
     }

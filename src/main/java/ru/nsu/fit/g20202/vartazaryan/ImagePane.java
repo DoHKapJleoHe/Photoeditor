@@ -23,6 +23,9 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
     @Getter
     private BufferedImage filteredImage;
+    @Setter
+    @Getter
+    private String imageName;
 
     private Graphics2D g2d;
 
@@ -43,6 +46,8 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     private GammaCorrection gammaCorrector = new GammaCorrection();
     private ContouringFilter contouringFilter = new ContouringFilter();
     private SepiaFilter sepiaFilter = new SepiaFilter();
+    private EmbossingFilter embossingFilter = new EmbossingFilter();
+    private FloydSteinbergDithering floydSteinbergDithering = new FloydSteinbergDithering();
 
     /*INSTRUMENTS*/
     private RotateInstrument rotateInstrument = new RotateInstrument();
@@ -62,6 +67,11 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         add(label);
     }
 
+
+    /**
+     * This method applies current filter to the original image.
+     * <br>To set up a new filter must be called setCurrentFilter()
+     */
     public void applyFilter()
     {
         if(originalImage != null)
@@ -92,6 +102,16 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
                     filteredImage = sepiaFilter.applyFilter(originalImage);
                     showFiltered = 1;
                 }
+
+                case EMBOSSING_FILTER -> {
+                    filteredImage = embossingFilter.applyFilter(originalImage);
+                    showFiltered = 1;
+                }
+
+                case FLOYD_DITHERING -> {
+                    filteredImage = floydSteinbergDithering.applyFilter(originalImage);
+                    showFiltered = 1;
+                }
             }
 
             repaint();
@@ -102,6 +122,11 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         }
     }
 
+    /**
+     * This method sets new image into image pane
+     *
+     * @param newImage
+     */
     public void setOriginalImage(BufferedImage newImage)
     {
         label.setVisible(false);
@@ -116,6 +141,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         originalImageWidth = width;
         originalImageHeight = height;
 
+        showFiltered = 0;
         repaint();
     }
 
@@ -204,9 +230,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     }
 
     @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
+    public void mouseReleased(MouseEvent e) {}
 
     @Override
     public void mouseEntered(MouseEvent e) {
@@ -234,6 +258,8 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         NEGATIVE_FILTER,
         GAMMA_CORRECTOR,
         CONTOURING_FILTER,
-        SEPIA_FILTER
+        SEPIA_FILTER,
+        EMBOSSING_FILTER,
+        FLOYD_DITHERING
     }
 }
