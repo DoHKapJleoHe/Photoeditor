@@ -2,22 +2,20 @@ package ru.nsu.fit.g20202.vartazaryan.filters;
 
 import lombok.Setter;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class ContouringFilter implements IFilter
 {
     @Setter
-    private int treshold  = 20;
+    private int threshold  = 20;
 
     // 0 - blackAndWhite, 1 - colorful
     private int colorType;
 
     private BufferedImage oldImage;
 
-    /*Robert's contouring kernels*/
-    private final double[][] Rkernel1 = {{1, 0}, {0, -1}};
-    private final double[][] Rkernel2 = {{0, 1}, {-1, 0}};
-
+    @Setter
     private int status = 0; // 0 - Sobel's operator 1 - Robert's operator
 
     private void sobel(BufferedImage newImage)
@@ -60,18 +58,74 @@ public class ContouringFilter implements IFilter
                 int magnitudeGreen = (int) Math.sqrt(gxGreen * gxGreen + gyGreen * gyGreen);
                 int magnitudeBlue = (int) Math.sqrt(gxBlue * gxBlue + gyBlue * gyBlue);
 
+                int res;
+                if(magnitudeRed > threshold && magnitudeGreen > threshold && magnitudeBlue > threshold)
+                    res = new Color(255, 255, 255).getRGB();
+                else
+                    res = new Color(0, 0, 0).getRGB();
+
+                newImage.setRGB(x, y, res);
                 /*int intensity = (magnitudeRed + magnitudeGreen + magnitudeBlue) / 3;
                 int gray = (intensity << 16) + (intensity << 8) + intensity;
-                newImage.setRGB(x, y, gray);*/
-                int res = 255 << 24 | magnitudeRed << 16 | magnitudeGreen << 8 | magnitudeBlue;
-                newImage.setRGB(x, y, res);
+                newImage.setRGB(x, y, gray);
+                /*int res = 255 << 24 | magnitudeRed << 16 | magnitudeGreen << 8 | magnitudeBlue;
+                newImage.setRGB(x, y, res);*/
             }
         }
     }
 
-    private void robert()
+    private void robert(BufferedImage newImage)
     {
+        double[][] Rkernel1 = {{1, 0}, {0, -1}};
+        double[][] Rkernel2 = {{0, 1}, {-1, 0}};
 
+        for(int x = 0; x < newImage.getWidth() - 1; x++)
+        {
+            for(int y = 0; y < newImage.getHeight() - 1; y++)
+            {
+                int gxRed = 0, gyRed = 0;
+                int gxGreen = 0, gyGreen = 0;
+                int gxBlue = 0, gyBlue = 0;
+
+                for(int i = 0; i <= 1; i++)
+                {
+                    for(int j = 0; j <= 1; j++)
+                    {
+                        int curColor = oldImage.getRGB(x + i, y + j);
+
+                        int red = (curColor >> 16) & 0xFF;
+                        int green = (curColor >> 8) & 0xFF;
+                        int blue = curColor & 0xFF;
+
+                        int grayRed = (int) (0.299 * red + 0.587 * 0 + 0.114 * 0);
+                        int grayGreen = (int) (0.299 * 0 + 0.587 * green + 0.114 * 0);
+                        int grayBlue = (int) (0.299 * 0 + 0.587 * 0 + 0.114 * blue);
+
+                        gxRed += Rkernel1[i][j] * grayRed;
+                        gyRed += Rkernel2[i][j] * grayRed;
+                        gxGreen += Rkernel1[i][j] * grayGreen;
+                        gyGreen += Rkernel2[i][j] * grayGreen;
+                        gxBlue += Rkernel1[i][j] * grayBlue;
+                        gyBlue += Rkernel2[i][j] * grayBlue;
+                    }
+                }
+
+                int magnitudeRed = (int) Math.sqrt(gxRed * gxRed + gyRed * gyRed);
+                int magnitudeGreen = (int) Math.sqrt(gxGreen * gxGreen + gyGreen * gyGreen);
+                int magnitudeBlue = (int) Math.sqrt(gxBlue * gxBlue + gyBlue * gyBlue);
+
+                int res;
+                if(magnitudeRed > threshold && magnitudeGreen > threshold && magnitudeBlue > threshold)
+                    res = new Color(255, 255, 255).getRGB();
+                else
+                    res = new Color(0, 0, 0).getRGB();
+
+                newImage.setRGB(x, y, res);
+                /*int intensity = (magnitudeRed + magnitudeGreen + magnitudeBlue) / 3;
+                int gray = (intensity << 16) + (intensity << 8) + intensity;
+                newImage.setRGB(x, y, gray);*/
+            }
+        }
     }
 
 
@@ -87,6 +141,10 @@ public class ContouringFilter implements IFilter
         if (status == 0)
         {
             sobel(newImage);
+        }
+        else if(status == 1)
+        {
+            robert(newImage);
         }
 
         return newImage;

@@ -21,13 +21,13 @@ public class MenuBar extends JMenuBar
     private GammaOptions gammaOptions;
     private Map<String, IFilter> filters;
 
-    public MenuBar(ImagePane image, LoadImage loadImage, SaveImage saveImage, Map<String, IFilter> filters)
+    public MenuBar(ImagePane image, LoadImage loadImage, SaveImage saveImage, Map<String, IFilter> filters, GammaOptions gammaOptions)
     {
         this.filters = filters;
         imagePane = image;
         imageLoader = loadImage;
         imageSaver= saveImage;
-        gammaOptions = new GammaOptions((GammaCorrection) filters.get("GammaCorrectionFilter"));
+        this.gammaOptions = gammaOptions;
 
         file = new JMenu("File");
         add(file);

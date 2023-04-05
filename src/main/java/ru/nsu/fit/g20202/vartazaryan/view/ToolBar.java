@@ -3,6 +3,8 @@ package ru.nsu.fit.g20202.vartazaryan.view;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import ru.nsu.fit.g20202.vartazaryan.ImagePane;
+import ru.nsu.fit.g20202.vartazaryan.options.ContouringOptions;
+import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,6 +17,8 @@ public class ToolBar extends JToolBar
     private ImagePane imagePane;
     private LoadImage imageLoader;
     private SaveImage imageSaver;
+    private GammaOptions gammaOptions;
+    private ContouringOptions contouringOptions;
 
     private JButton loadButton;
     private JButton saveButton;
@@ -28,11 +32,13 @@ public class ToolBar extends JToolBar
     private JButton rotateButton;
     private JButton returnButton;
 
-    public ToolBar(ImagePane image, LoadImage loadImage, SaveImage saveImage) throws IOException
+    public ToolBar(ImagePane image, LoadImage loadImage, SaveImage saveImage, GammaOptions gammaOptions, ContouringOptions contouringOptions) throws IOException
     {
         imagePane = image;
         imageLoader = loadImage;
         imageSaver = saveImage;
+        this.gammaOptions = gammaOptions;
+        this.contouringOptions = contouringOptions;
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -51,7 +57,6 @@ public class ToolBar extends JToolBar
         ImageIcon sepiaIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/sepia.png")));
         ImageIcon embossingIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/embossing.png")));
         ImageIcon ditheringIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/dithering.png")));
-
 
         loadButton = createButton("Load Image", loadIcon);
         add(loadButton);
@@ -122,12 +127,31 @@ public class ToolBar extends JToolBar
         });
 
         gammaCorrection.addActionListener(e -> {
-            //JOptionPane.showMessageDialog(this, );
-            imagePane.applyFilter("GammaCorrectionFilter");
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    gammaOptions,
+                    "Gamma options",
+                    JOptionPane.OK_CANCEL_OPTION
+                    );
+            if(confirm == JOptionPane.OK_OPTION)
+            {
+                System.out.println("Gamma applied");
+                imagePane.applyFilter("GammaCorrectionFilter");
+            }
         });
 
         contouring.addActionListener(e -> {
-            imagePane.applyFilter("ContouringFilter");
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    contouringOptions,
+                    "Contouring options",
+                    JOptionPane.OK_CANCEL_OPTION
+            );
+
+            if(confirm == JOptionPane.OK_OPTION)
+            {
+                imagePane.applyFilter("ContouringFilter");
+            }
         });
 
         sepia.addActionListener(e -> {

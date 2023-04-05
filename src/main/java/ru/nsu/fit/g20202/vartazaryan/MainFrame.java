@@ -6,6 +6,7 @@ import ru.nsu.fit.g20202.vartazaryan.filters.*;
 import ru.nsu.fit.g20202.vartazaryan.instruments.FitToScreen;
 import ru.nsu.fit.g20202.vartazaryan.instruments.Instrument;
 import ru.nsu.fit.g20202.vartazaryan.instruments.RotateInstrument;
+import ru.nsu.fit.g20202.vartazaryan.options.ContouringOptions;
 import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
 import ru.nsu.fit.g20202.vartazaryan.options.RotateOption;
 import ru.nsu.fit.g20202.vartazaryan.view.*;
@@ -66,11 +67,13 @@ public class MainFrame extends JFrame
 
         LoadImage loadImage = new LoadImage(imagePane);
         SaveImage saveImage = new SaveImage(imagePane);
+        GammaOptions gammaOptions = new GammaOptions((GammaCorrection) filters.get("GammaCorrectionFilter"));
+        ContouringOptions contouringOptions = new ContouringOptions((ContouringFilter) filters.get("ContouringFilter"));
 
-        toolBar = new ToolBar(imagePane, loadImage, saveImage);
+        toolBar = new ToolBar(imagePane, loadImage, saveImage, gammaOptions, contouringOptions);
         add(toolBar, BorderLayout.NORTH);
 
-        menu = new MenuBar(imagePane, loadImage, saveImage, filters);
+        menu = new MenuBar(imagePane, loadImage, saveImage, filters, gammaOptions);
         setJMenuBar(menu);
 
         rotateOptions = new RotateOption(imagePane);
