@@ -1,6 +1,7 @@
 package ru.nsu.fit.g20202.vartazaryan.options;
 
 import ru.nsu.fit.g20202.vartazaryan.ImagePane;
+import ru.nsu.fit.g20202.vartazaryan.filters.GammaCorrection;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,13 +11,13 @@ public class GammaOptions extends JPanel
     private JSlider gammaSlider;
     private JSpinner gammaSpinner;
 
-    private ImagePane imagePane;
+    private GammaCorrection gammaCorrection;
 
-    public GammaOptions(ImagePane image)
+    public GammaOptions(GammaCorrection gammaCorrection)
     {
         setPreferredSize(new Dimension(300, 100));
 
-        imagePane = image;
+        this.gammaCorrection = gammaCorrection;
 
         gammaSlider = new JSlider(0, 20);
         gammaSlider.setMajorTickSpacing(1);
@@ -31,7 +32,7 @@ public class GammaOptions extends JPanel
         gammaSlider.addChangeListener(e -> {
             int gamma = gammaSlider.getValue();
             gammaSpinner.setValue(gamma);
-            imagePane.updateGammaOptions(gamma);
+            gammaCorrection.setGamma(gamma/10);
         });
 
         gammaSpinner.addChangeListener(e -> {
@@ -41,9 +42,5 @@ public class GammaOptions extends JPanel
             }
             gammaSlider.setValue((int)gammaSpinner.getValue());
         });
-    }
-    public int getGammaValue()
-    {
-        return gammaSlider.getValue();
     }
 }

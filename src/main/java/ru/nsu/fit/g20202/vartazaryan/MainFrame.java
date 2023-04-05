@@ -2,6 +2,10 @@ package ru.nsu.fit.g20202.vartazaryan;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
+import ru.nsu.fit.g20202.vartazaryan.filters.*;
+import ru.nsu.fit.g20202.vartazaryan.instruments.FitToScreen;
+import ru.nsu.fit.g20202.vartazaryan.instruments.Instrument;
+import ru.nsu.fit.g20202.vartazaryan.instruments.RotateInstrument;
 import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
 import ru.nsu.fit.g20202.vartazaryan.options.RotateOption;
 import ru.nsu.fit.g20202.vartazaryan.view.*;
@@ -10,25 +14,25 @@ import ru.nsu.fit.g20202.vartazaryan.view.MenuBar;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainFrame extends JFrame
 {
     private ImagePane imagePane;
     private JScrollPane imageScrollPane;
-    private GammaOptions gammaOptions;
     private RotateOption rotateOptions;
     private BottomPanel bottomOptions;
 
     private ToolBar toolBar;
     private MenuBar menu;
 
-    private JPopupMenu popupMenu;
+    private Map<String, IFilter> filters = new HashMap<>();
+    private Map<String, Instrument> instruments = new HashMap<>();
 
     public MainFrame() throws IOException
     {
@@ -44,8 +48,19 @@ public class MainFrame extends JFrame
         setBounds(400, 100, 640, 480);
         setMinimumSize(new Dimension(640, 480));
 
+        filters.put("BWFilter", new BlackAndWhiteFilter());
+        filters.put("NegativeFilter", new NegativeFilter());
+        filters.put("GammaCorrectionFilter", new GammaCorrection());
+        filters.put("ContouringFilter", new ContouringFilter());
+        filters.put("EmbossingFilter", new EmbossingFilter());
+        filters.put("SepiaFilter", new SepiaFilter());
+        filters.put("FloydSteinbergDitheringFilter", new FloydSteinbergDithering());
+
+        instruments.put("FitToScreenInstrument", new FitToScreen());
+        instruments.put("RotateInstrument", new RotateInstrument());
+
         imageScrollPane = new JScrollPane();
-        imagePane = new ImagePane(imageScrollPane);
+        imagePane = new ImagePane(imageScrollPane, filters, instruments);
         imagePane.setVisible(true);
         add(imageScrollPane);
 
@@ -55,12 +70,12 @@ public class MainFrame extends JFrame
         toolBar = new ToolBar(imagePane, loadImage, saveImage);
         add(toolBar, BorderLayout.NORTH);
 
-        menu = new MenuBar(imagePane, loadImage, saveImage);
+        menu = new MenuBar(imagePane, loadImage, saveImage, filters);
         setJMenuBar(menu);
 
         rotateOptions = new RotateOption(imagePane);
 
-        bottomOptions = new BottomPanel(imagePane);
+        bottomOptions = new BottomPanel(imagePane, instruments);
         add(bottomOptions, BorderLayout.SOUTH);
 
         /*THEMES*/
@@ -105,22 +120,10 @@ public class MainFrame extends JFrame
             }
         });
 
-        MouseAdapter click = new MouseAdapter() {
-            @Override
-            public void mouseReleased(MouseEvent e)
-            {
-                if (e.isPopupTrigger())
-                {
-                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
-                }
-            }
-        };
-
-        imagePane.addMouseListener(click);
-
         pack();
         setVisible(true);
     }
+
 
     public static void main(String[] args) throws IOException
     {

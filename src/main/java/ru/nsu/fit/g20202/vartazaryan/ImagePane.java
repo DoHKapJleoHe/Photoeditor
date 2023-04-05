@@ -3,24 +3,26 @@ package ru.nsu.fit.g20202.vartazaryan;
 import lombok.Getter;
 import lombok.Setter;
 import ru.nsu.fit.g20202.vartazaryan.filters.*;
+import ru.nsu.fit.g20202.vartazaryan.instruments.FitToScreen;
+import ru.nsu.fit.g20202.vartazaryan.instruments.Instrument;
 import ru.nsu.fit.g20202.vartazaryan.instruments.RotateInstrument;
 import ru.nsu.fit.g20202.vartazaryan.instruments.Zoom;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
-public class ImagePane extends JPanel implements MouseListener, MouseMotionListener
+public class ImagePane extends JPanel implements MouseListener, MouseMotionListener, MouseWheelListener
 {
     private static final int INDENT = 4;
+    private static final double zoomK = 0.05;
 
-    private BufferedImage originalImage;
     private int originalImageWidth;
     private int originalImageHeight;
 
+    private BufferedImage originalImage;
     @Getter
     private BufferedImage filteredImage;
     @Setter
@@ -33,30 +35,28 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     private int height = 480;
 
     private JScrollPane scrollPane;
+    private Dimension panelSize;
     private Point origin;
-    @Setter
-    private Filter curFilter;
 
     /*SHOW PARAMETERS*/
     private int showFiltered = 0;
 
     /*FILTERS*/
-    private BlackAndWhiteFilter bwfFilter = new BlackAndWhiteFilter();
-    private NegativeFilter negFilter = new NegativeFilter();
-    private GammaCorrection gammaCorrector = new GammaCorrection();
-    private ContouringFilter contouringFilter = new ContouringFilter();
-    private SepiaFilter sepiaFilter = new SepiaFilter();
-    private EmbossingFilter embossingFilter = new EmbossingFilter();
-    private FloydSteinbergDithering floydSteinbergDithering = new FloydSteinbergDithering();
+    private Map<String, IFilter> filters;
 
     /*INSTRUMENTS*/
     private RotateInstrument rotateInstrument = new RotateInstrument();
-    private Zoom zoom = new Zoom();
+    //private Zoom zoom = new Zoom();
+
+    Map<String, Instrument> instruments;
 
     private JLabel label;
 
-    public ImagePane(JScrollPane sp)
+    public ImagePane(JScrollPane sp, Map<String, IFilter> filters, Map<String, Instrument> instruments)
     {
+        this.filters = filters;
+        this.instruments = instruments;
+
         scrollPane = sp;
         scrollPane.setViewportView(this);
         scrollPane.setViewportBorder(BorderFactory.createCompoundBorder(
@@ -65,54 +65,20 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
         label = new JLabel("Place for image");
         add(label);
+
+        panelSize = getVisibleRect().getSize();
+        addMouseListener(this);
+        addMouseWheelListener(this);
+        scrollPane.setViewportView(this);
     }
 
-
-    /**
-     * This method applies current filter to the original image.
-     * <br>To set up a new filter must be called setCurrentFilter()
-     */
-    public void applyFilter()
+    public void applyFilter(String filter)
     {
         if(originalImage != null)
         {
-            switch (curFilter)
-            {
-                case BLACK_WHITE_FILTER -> {
-                    filteredImage = bwfFilter.applyFilter(originalImage);
-                    showFiltered = 1;
-                }
-
-                case NEGATIVE_FILTER -> {
-                    filteredImage = negFilter.applyFilter(originalImage);
-                    showFiltered = 1;
-                }
-
-                case GAMMA_CORRECTOR -> {
-                    filteredImage = gammaCorrector.applyFilter(originalImage);
-                    showFiltered = 1;
-                }
-
-                case CONTOURING_FILTER -> {
-                    filteredImage = contouringFilter.applyFilter(originalImage);
-                    showFiltered = 1;
-                }
-
-                case SEPIA_FILTER -> {
-                    filteredImage = sepiaFilter.applyFilter(originalImage);
-                    showFiltered = 1;
-                }
-
-                case EMBOSSING_FILTER -> {
-                    filteredImage = embossingFilter.applyFilter(originalImage);
-                    showFiltered = 1;
-                }
-
-                case FLOYD_DITHERING -> {
-                    filteredImage = floydSteinbergDithering.applyFilter(originalImage);
-                    showFiltered = 1;
-                }
-            }
+            IFilter curFilter = filters.get(filter);
+            filteredImage = curFilter.applyFilter(originalImage);
+            showFiltered = 1;
 
             repaint();
         }
@@ -145,20 +111,29 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         repaint();
     }
 
-    public BufferedImage getOriginalImage() {
-        return originalImage;
-    }
-
-    public void updateGammaOptions(int gamma)
+    public void fitImage()
     {
-        gammaCorrector.setGamma((double)gamma/10);
-
         if(originalImage != null)
         {
-            filteredImage = gammaCorrector.applyFilter(originalImage);
-            showFiltered = 1;
+            //originalImage = instruments.get("FitToScreenInstrument").apply(originalImage);
+            //System.out.println("Resized");
+            //this.revalidate();
+            double coef = Math.min(getWidth() / originalImageWidth, getHeight() / originalImageHeight);
+            System.out.println(coef);
+            originalImageWidth = (int) (originalImageWidth*coef);
+            originalImageHeight = (int) (originalImageHeight*coef);
+            showFiltered = 0;
             repaint();
         }
+        else
+        {
+            JOptionPane.showMessageDialog(this, "Image has not been selected!", "Error", JOptionPane.QUESTION_MESSAGE);
+        }
+
+    }
+
+    public BufferedImage getOriginalImage() {
+        return originalImage;
     }
 
     public void showOriginalImage()
@@ -186,7 +161,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
     }
 
-    public void zoomImage(int zoomCoef)
+    /*public void zoomImage(int zoomCoef)
     {
         // bugged, needs fixes
         zoom.setZoomCoef(zoomCoef);
@@ -201,7 +176,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
             filteredImage = zoom.apply(filteredImage, originalImageWidth, originalImageHeight);
             repaint();
         }
-    }
+    }*/
 
     @Override
     public void paintComponent(Graphics g)
@@ -210,7 +185,9 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
         if(showFiltered == 0)
         {
-            g.drawImage(originalImage, 0, 0, this);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2d.drawImage(originalImage, 0, 0, originalImageWidth, originalImageHeight, this);
         }
         else
         {
@@ -251,6 +228,49 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     @Override
     public void mouseMoved(MouseEvent e) {
 
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e)
+    {
+        /*if(originalImage != null)
+        {
+            double k = 1 - e.getWheelRotation()*zoomK;
+            int newPW = (int)(panelSize.width*k);
+
+            if(k > 1)
+            {
+                int newPH = (int)(panelSize.height*k);
+                Dimension viewSize = getVisibleRect().getSize();
+                int pixSizeX = newPW / originalImageWidth;
+                int pixSizeY = newPH / originalImageHeight;
+
+                if (pixSizeX>0 && pixSizeY>0)
+                {
+                    int pixNumX = viewSize.width / pixSizeX;
+                    int pixNumY = viewSize.height / pixSizeY;
+                    if (pixNumX<2 || pixNumY<2)
+                        return;
+                }
+            }
+
+            panelSize.width = newPW;
+            panelSize.height = (int) ((long)panelSize.width * originalImageHeight / originalImageWidth);
+            int x = (int) (e.getX() * k);
+            int y = (int) (e.getY() * k);
+            Point scroll = scrollPane.getViewport().getViewPosition();
+            scroll.x -= e.getX();
+            scroll.y -= e.getY();
+            scroll.x += x;
+            scroll.y += y;
+            repaint();
+            revalidate();
+            scrollPane.validate();
+
+            scrollPane.getHorizontalScrollBar().setValue(scroll.x);
+            scrollPane.getVerticalScrollBar().setValue(scroll.y);
+            scrollPane.repaint();
+        }*/
     }
 
     public enum Filter{

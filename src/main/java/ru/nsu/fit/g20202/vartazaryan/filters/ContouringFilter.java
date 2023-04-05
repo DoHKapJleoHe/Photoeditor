@@ -9,6 +9,9 @@ public class ContouringFilter implements IFilter
     @Setter
     private int treshold  = 20;
 
+    // 0 - blackAndWhite, 1 - colorful
+    private int colorType;
+
     private BufferedImage oldImage;
 
     /*Robert's contouring kernels*/
@@ -57,10 +60,11 @@ public class ContouringFilter implements IFilter
                 int magnitudeGreen = (int) Math.sqrt(gxGreen * gxGreen + gyGreen * gyGreen);
                 int magnitudeBlue = (int) Math.sqrt(gxBlue * gxBlue + gyBlue * gyBlue);
 
-                int intensity = (magnitudeRed + magnitudeGreen + magnitudeBlue) / 3;
+                /*int intensity = (magnitudeRed + magnitudeGreen + magnitudeBlue) / 3;
                 int gray = (intensity << 16) + (intensity << 8) + intensity;
-
-                newImage.setRGB(x, y, gray);
+                newImage.setRGB(x, y, gray);*/
+                int res = 255 << 24 | magnitudeRed << 16 | magnitudeGreen << 8 | magnitudeBlue;
+                newImage.setRGB(x, y, res);
             }
         }
     }

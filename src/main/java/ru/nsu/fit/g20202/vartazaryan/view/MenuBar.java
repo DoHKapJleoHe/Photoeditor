@@ -3,10 +3,13 @@ package ru.nsu.fit.g20202.vartazaryan.view;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import ru.nsu.fit.g20202.vartazaryan.ImagePane;
+import ru.nsu.fit.g20202.vartazaryan.filters.GammaCorrection;
+import ru.nsu.fit.g20202.vartazaryan.filters.IFilter;
 import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.util.Map;
 
 public class MenuBar extends JMenuBar
 {
@@ -16,13 +19,15 @@ public class MenuBar extends JMenuBar
     private LoadImage imageLoader;
     private SaveImage imageSaver;
     private GammaOptions gammaOptions;
+    private Map<String, IFilter> filters;
 
-    public MenuBar(ImagePane image, LoadImage loadImage, SaveImage saveImage)
+    public MenuBar(ImagePane image, LoadImage loadImage, SaveImage saveImage, Map<String, IFilter> filters)
     {
+        this.filters = filters;
         imagePane = image;
         imageLoader = loadImage;
         imageSaver= saveImage;
-        gammaOptions = new GammaOptions(imagePane);
+        gammaOptions = new GammaOptions((GammaCorrection) filters.get("GammaCorrectionFilter"));
 
         file = new JMenu("File");
         add(file);
@@ -46,6 +51,7 @@ public class MenuBar extends JMenuBar
         JMenu contouring = new JMenu("Contouring");
         edit.add(contouring);
         JRadioButtonMenuItem sobel = new JRadioButtonMenuItem("Sobel");
+        sobel.setSelected(true);
         JRadioButtonMenuItem robert = new JRadioButtonMenuItem("Robert");
         contouring.add(sobel);
         contouring.add(robert);

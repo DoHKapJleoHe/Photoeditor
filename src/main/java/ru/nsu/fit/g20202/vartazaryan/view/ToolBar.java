@@ -106,8 +106,7 @@ public class ToolBar extends JToolBar
         });
 
         blackWhite.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.BLACK_WHITE_FILTER);
-            imagePane.applyFilter();
+            imagePane.applyFilter("BWFilter");
         });
 
         returnButton.addActionListener(e -> {
@@ -119,33 +118,28 @@ public class ToolBar extends JToolBar
         });
 
         negative.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.NEGATIVE_FILTER);
-            imagePane.applyFilter();
+            imagePane.applyFilter("NegativeFilter");
         });
 
         gammaCorrection.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.GAMMA_CORRECTOR);
-            imagePane.applyFilter();
+            //JOptionPane.showMessageDialog(this, );
+            imagePane.applyFilter("GammaCorrectionFilter");
         });
 
         contouring.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.CONTOURING_FILTER);
-            imagePane.applyFilter();
+            imagePane.applyFilter("ContouringFilter");
         });
 
         sepia.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.SEPIA_FILTER);
-            imagePane.applyFilter();
+            imagePane.applyFilter("SepiaFilter");
         });
 
         embossing.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.EMBOSSING_FILTER);
-            imagePane.applyFilter();
+            imagePane.applyFilter("EmbossingFilter");
         });
 
         dithering.addActionListener(e -> {
-            imagePane.setCurFilter(ImagePane.Filter.FLOYD_DITHERING);
-            imagePane.applyFilter();
+            imagePane.applyFilter("FloydSteinbergDitheringFilter");
         });
     }
 

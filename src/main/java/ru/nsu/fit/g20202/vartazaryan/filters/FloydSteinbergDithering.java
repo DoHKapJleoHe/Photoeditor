@@ -7,17 +7,27 @@ import java.awt.image.BufferedImage;
 
 public class FloydSteinbergDithering implements IFilter
 {
-    private BufferedImage oldImage;
     @Setter
-    private int redQuantizationNum = 8;
+    private int redQuantizationNum = 2;
     @Setter
-    private int greenQuantizationNum = 8;
+    private int greenQuantizationNum = 2;
     @Setter
-    private int blueQuantizationNum = 8;
+    private int blueQuantizationNum = 2;
 
     private int[] rPalette;
     private int[] gPalette;
     private int[] bPalette;
+
+    private int getColor(int neighbourR, int neighbourG, int neighbourB)
+    {
+        int color;
+        neighbourR = Math.max(Math.min(neighbourR, 255), 0);
+        neighbourG = Math.max(Math.min(neighbourG, 255), 0);
+        neighbourB = Math.max(Math.min(neighbourB, 255), 0);
+
+        color = 255 << 24 | neighbourR << 16 | neighbourG << 8 | neighbourB;
+        return color;
+    }
 
     private void fillPalette(int[] palette, int interval, int quantNum)
     {
@@ -26,6 +36,8 @@ public class FloydSteinbergDithering implements IFilter
         {
             palette[i] = color;
             color += interval;
+            if(color > 255)
+                color = 255;
         }
     }
 
@@ -39,13 +51,13 @@ public class FloydSteinbergDithering implements IFilter
         *  Interval depends on quantization number.
         *  Quantization number is the number of colors in palette.
         */
-        int interval = (int) (256 / redQuantizationNum);
+        int interval = (int) (256 / (redQuantizationNum - 1));
         fillPalette(rPalette, interval, redQuantizationNum);
 
-        interval = (int) (256 / greenQuantizationNum);
+        interval = (int) (256 / (greenQuantizationNum - 1));
         fillPalette(gPalette, interval, greenQuantizationNum);
 
-        interval = (int) (256 / blueQuantizationNum);
+        interval = (int) (256 / (blueQuantizationNum - 1));
         fillPalette(bPalette, interval, blueQuantizationNum);
     }
 
@@ -65,40 +77,18 @@ public class FloydSteinbergDithering implements IFilter
         return palette[pos];
     }
 
-    private int neighboursColor(int color, int errR, int errG, int errB, double coef)
-    {
-        int red = (color >> 16) & 0xFF;
-        int green = (color >> 8) & 0xFF;
-        int blue = color & 0xFF;
-
-        int newR = (int) (red + errR * coef);
-        int newG = (int) (green + errG * coef);
-        int newB = (int) (blue + errB * coef);
-
-        newR = Math.max(Math.min(newR, 255), 0);
-        newG = Math.max(Math.min(newG, 255), 0);
-        newB = Math.max(Math.min(newB, 255), 0);
-
-        /*int rgb = 0xFF;
-        rgb = (rgb << 8) | newR;
-        rgb = (rgb << 8) | newG;
-        rgb = (rgb << 8) | newB;*/
-
-        return new Color(newR, newG, newB).getRGB();
-    }
-
     @Override
     public BufferedImage applyFilter(BufferedImage image)
     {
-        var cm = image.getColorModel();
-        var raster = image.getRaster();
-        BufferedImage newImage = new BufferedImage(cm, raster, cm.isAlphaPremultiplied(), null);
+        BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
+        Graphics2D g2d = newImage.createGraphics();
+        g2d.drawImage(image, null, 0, 0);
 
         createPalette();
 
-        for(int x = 0; x < newImage.getWidth(); x++)
+        for(int x = 0; x < newImage.getWidth() - 1; x++)
         {
-            for(int y = 0; y < newImage.getHeight(); y++)
+            for(int y = 0; y < newImage.getHeight() - 1; y++)
             {
                 int curColor = newImage.getRGB(x, y);
                 int red = (curColor >> 16) & 0xFF;
@@ -109,54 +99,83 @@ public class FloydSteinbergDithering implements IFilter
                 int newG = findColorInPalette(gPalette, green);
                 int newB = findColorInPalette(bPalette, blue);
 
-                int newColor = 0xFF;
-                newColor = (newColor << 8) | newR;
-                newColor = (newColor << 8) | newG;
-                newColor = (newColor << 8) | newB;
+                int newColor = 255 << 24 | newR << 16 | newG << 8 | newB;
 
                 newImage.setRGB(x, y, newColor);
 
-                int err = Math.abs(curColor - newColor);
-
-                /*int errR = red - newR;
+                int errR = red - newR;
                 int errG = green - newG;
-                int errB = blue - newB;*/
+                int errB = blue - newB;
 
                 int neighbour;
+                int neighbourR;
+                int neighbourG;
+                int neighbourB;
                 int color;
 
                 if(x < newImage.getWidth() - 1)
                 {
                     neighbour = newImage.getRGB(x + 1, y);
+                    neighbourR = (neighbour >> 16) & 0xFF;
+                    neighbourG = (neighbour >> 8) & 0xFF;
+                    neighbourB = neighbour & 0xFF;
 
-                    //color = neighboursColor(neighbour, errR, errG, errB, 7.0/16);
-                    newImage.setRGB(x + 1, y, (int) (neighbour + err*7.0/16));
+                    neighbourR = (int) (neighbourR + errR * 7.0/16);
+                    neighbourG = (int) (neighbourG + errG * 7.0/16);
+                    neighbourB = (int) (neighbourB + errB * 7.0/16);
+
+                    color = getColor(neighbourR, neighbourG, neighbourB);
+
+                    newImage.setRGB(x + 1, y, color);
                 }
                 if(x > 0 && y < newImage.getHeight() - 1)
                 {
                     neighbour = newImage.getRGB(x - 1, y + 1);
+                    neighbourR = (neighbour >> 16) & 0xFF;
+                    neighbourG = (neighbour >> 8) & 0xFF;
+                    neighbourB = neighbour & 0xFF;
 
-                    //color = neighboursColor(neighbour, errR, errG, errB, 3.0/16);
-                    newImage.setRGB(x - 1, y + 1, (int) (neighbour + err*3.0/16));
+                    neighbourR = (int) (neighbourR + errR * 3.0/16);
+                    neighbourG = (int) (neighbourG + errG * 3.0/16);
+                    neighbourB = (int) (neighbourB + errB * 3.0/16);
+
+                    color = getColor(neighbourR, neighbourG, neighbourB);
+
+                    newImage.setRGB(x - 1, y + 1, color);
                 }
                 if(y < newImage.getHeight() - 1)
                 {
                     neighbour = newImage.getRGB(x, y + 1);
+                    neighbourR = (neighbour >> 16) & 0xFF;
+                    neighbourG = (neighbour >> 8) & 0xFF;
+                    neighbourB = neighbour & 0xFF;
 
-                    //color = neighboursColor(neighbour, errR, errG, errB, 5.0/16);
-                    newImage.setRGB(x, y + 1, (int) (neighbour + err*5.0/16));
+                    neighbourR = (int) (neighbourR + errR * 5.0/16);
+                    neighbourG = (int) (neighbourG + errG * 5.0/16);
+                    neighbourB = (int) (neighbourB + errB * 5.0/16);
+
+                    color = getColor(neighbourR, neighbourG, neighbourB);
+
+                    newImage.setRGB(x, y + 1, color);
                 }
                 if(x < newImage.getWidth() - 1 && y < newImage.getHeight() - 1)
                 {
                     neighbour = newImage.getRGB(x + 1, y + 1);
+                    neighbourR = (neighbour >> 16) & 0xFF;
+                    neighbourG = (neighbour >> 8) & 0xFF;
+                    neighbourB = neighbour & 0xFF;
 
-                    //color = neighboursColor(neighbour, errR, errG, errB, 1.0/16);
-                    newImage.setRGB(x + 1, y + 1, (int) (neighbour + err*1.0/16));
+                    neighbourR = (int) (neighbourR + errR * 1.0/16);
+                    neighbourG = (int) (neighbourG + errG * 1.0/16);
+                    neighbourB = (int) (neighbourB + errB * 1.0/16);
+
+                    color = getColor(neighbourR, neighbourG, neighbourB);
+
+                    newImage.setRGB(x + 1, y + 1, color);
                 }
             }
         }
 
         return newImage;
     }
-
 }

@@ -6,6 +6,17 @@ public class EmbossingFilter implements IFilter
 {
     private final int[][] embossingMatrix = {{0, 1, 0}, {-1, 0, 1}, {0, -1, 0}};
 
+    private int getColor(int red, int green, int blue)
+    {
+        int color;
+        red = Math.max(Math.min(red, 255), 0);
+        green = Math.max(Math.min(green, 255), 0);
+        blue = Math.max(Math.min(blue, 255), 0);
+
+        color = 255 << 24 | red << 16 | green << 8 | blue;
+        return color;
+    }
+
     @Override
     public BufferedImage applyFilter(BufferedImage oldImage) //78648
     {
