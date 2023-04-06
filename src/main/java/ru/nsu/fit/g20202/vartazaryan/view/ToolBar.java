@@ -4,13 +4,16 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import ru.nsu.fit.g20202.vartazaryan.ImagePane;
 import ru.nsu.fit.g20202.vartazaryan.options.ContouringOptions;
+import ru.nsu.fit.g20202.vartazaryan.options.FloydDitheringOptions;
 import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
+import ru.nsu.fit.g20202.vartazaryan.options.Option;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class ToolBar extends JToolBar
 {
@@ -19,26 +22,30 @@ public class ToolBar extends JToolBar
     private SaveImage imageSaver;
     private GammaOptions gammaOptions;
     private ContouringOptions contouringOptions;
+    private FloydDitheringOptions floydDitheringOptions;
 
     private JButton loadButton;
     private JButton saveButton;
     private JButton blackWhite;
     private JButton negative;
     private JButton gammaCorrection;
+    private JButton sharpness;
     private JButton contouring;
     private JButton sepia;
     private JButton embossing;
     private JButton dithering;
+    private JButton watercolor;
     private JButton rotateButton;
     private JButton returnButton;
 
-    public ToolBar(ImagePane image, LoadImage loadImage, SaveImage saveImage, GammaOptions gammaOptions, ContouringOptions contouringOptions) throws IOException
+    public ToolBar(ImagePane image, LoadImage loadImage, SaveImage saveImage, Map<String, Option> options) throws IOException
     {
         imagePane = image;
         imageLoader = loadImage;
         imageSaver = saveImage;
-        this.gammaOptions = gammaOptions;
-        this.contouringOptions = contouringOptions;
+        this.gammaOptions = (GammaOptions) options.get("GammaOptions");
+        this.contouringOptions = (ContouringOptions) options.get("ContouringOptions");
+        this.floydDitheringOptions = (FloydDitheringOptions) options.get("FloydDitheringOptions");
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -57,6 +64,9 @@ public class ToolBar extends JToolBar
         ImageIcon sepiaIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/sepia.png")));
         ImageIcon embossingIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/embossing.png")));
         ImageIcon ditheringIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/dithering.png")));
+        ImageIcon sharpnessIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/sharpness.png")));
+        ImageIcon brushIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/paintbrush.png")));
+
 
         loadButton = createButton("Load Image", loadIcon);
         add(loadButton);
@@ -75,6 +85,9 @@ public class ToolBar extends JToolBar
         gammaCorrection = createButton("Gamma Correction", gammaIcon);
         add(gammaCorrection);
 
+        sharpness = createButton("Sharpness Filter", sharpnessIcon);
+        add(sharpness);
+
         contouring = createButton("Contouring Filter", contourIcon);
         add(contouring);
 
@@ -83,6 +96,9 @@ public class ToolBar extends JToolBar
 
         embossing = createButton("Embossing Filter", embossingIcon);
         add(embossing);
+
+        watercolor = createButton("WatercolorFilter", brushIcon);
+        add(watercolor);
 
         dithering = createButton("Dithering", ditheringIcon);
         add(dithering);
@@ -140,6 +156,10 @@ public class ToolBar extends JToolBar
             }
         });
 
+        sharpness.addActionListener(e -> {
+            imagePane.applyFilter("SharpnessFilter");
+        });
+
         contouring.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(
                     this,
@@ -163,7 +183,21 @@ public class ToolBar extends JToolBar
         });
 
         dithering.addActionListener(e -> {
-            imagePane.applyFilter("FloydSteinbergDitheringFilter");
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    floydDitheringOptions,
+                    "Dithering options",
+                    JOptionPane.OK_CANCEL_OPTION
+            );
+
+            if(confirm == JOptionPane.OK_OPTION)
+            {
+                imagePane.applyFilter("FloydSteinbergDitheringFilter");
+            }
+        });
+
+        watercolor.addActionListener(e -> {
+            imagePane.applyFilter("WaterColorFilter");
         });
     }
 

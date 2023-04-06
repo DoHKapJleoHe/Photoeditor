@@ -6,7 +6,7 @@ import ru.nsu.fit.g20202.vartazaryan.filters.IFilter;
 import javax.swing.*;
 import java.util.Map;
 
-public class ContouringOptions extends JPanel
+public class ContouringOptions extends JPanel implements Option
 {
     ContouringFilter filter;
 
@@ -30,12 +30,12 @@ public class ContouringOptions extends JPanel
             filter.setStatus(1);
         });
 
-        JSlider thresholdSlider = new JSlider(10, 30);
+        JSlider thresholdSlider = new JSlider(0, 30);
         thresholdSlider.setMajorTickSpacing(1);
         thresholdSlider.setValue(20);
         add(thresholdSlider);
 
-        SpinnerNumberModel thresholdSpinnerModel = new SpinnerNumberModel(20,10, 30, 1);
+        SpinnerNumberModel thresholdSpinnerModel = new SpinnerNumberModel(20,0, 30, 1);
         JSpinner thresholdSpinner = new JSpinner(thresholdSpinnerModel);
         add(thresholdSpinner);
 

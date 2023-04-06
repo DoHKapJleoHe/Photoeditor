@@ -6,7 +6,7 @@ import ru.nsu.fit.g20202.vartazaryan.filters.GammaCorrection;
 import javax.swing.*;
 import java.awt.*;
 
-public class GammaOptions extends JPanel
+public class GammaOptions extends JPanel implements Option
 {
     private JSlider gammaSlider;
     private JSpinner gammaSpinner;
@@ -19,26 +19,26 @@ public class GammaOptions extends JPanel
 
         this.gammaCorrection = gammaCorrection;
 
-        gammaSlider = new JSlider(0, 20);
+        gammaSlider = new JSlider(0, 10);
         gammaSlider.setMajorTickSpacing(1);
         gammaSlider.setValue(10);
 
         add(gammaSlider);
 
-        SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(10, 0, 20, 1);
+        SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(10, 0, 10, 1);
         gammaSpinner = new JSpinner(spinnerNumberModel);
         add(gammaSpinner);
 
         gammaSlider.addChangeListener(e -> {
             int gamma = gammaSlider.getValue();
             gammaSpinner.setValue(gamma);
-            gammaCorrection.setGamma(gamma/10);
+            gammaCorrection.setGamma((double)gamma/10);
         });
 
         gammaSpinner.addChangeListener(e -> {
-            if((int)gammaSpinner.getValue() > 20)
+            if((int)gammaSpinner.getValue() > 10)
             {
-                gammaSpinner.setValue(20);
+                gammaSpinner.setValue(10);
             }
             gammaSlider.setValue((int)gammaSpinner.getValue());
         });

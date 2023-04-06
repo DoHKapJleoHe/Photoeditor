@@ -6,9 +6,7 @@ import ru.nsu.fit.g20202.vartazaryan.filters.*;
 import ru.nsu.fit.g20202.vartazaryan.instruments.FitToScreen;
 import ru.nsu.fit.g20202.vartazaryan.instruments.Instrument;
 import ru.nsu.fit.g20202.vartazaryan.instruments.RotateInstrument;
-import ru.nsu.fit.g20202.vartazaryan.options.ContouringOptions;
-import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
-import ru.nsu.fit.g20202.vartazaryan.options.RotateOption;
+import ru.nsu.fit.g20202.vartazaryan.options.*;
 import ru.nsu.fit.g20202.vartazaryan.view.*;
 import ru.nsu.fit.g20202.vartazaryan.view.MenuBar;
 
@@ -34,6 +32,7 @@ public class MainFrame extends JFrame
 
     private Map<String, IFilter> filters = new HashMap<>();
     private Map<String, Instrument> instruments = new HashMap<>();
+    private Map<String, Option> options = new HashMap<>();
 
     public MainFrame() throws IOException
     {
@@ -56,6 +55,8 @@ public class MainFrame extends JFrame
         filters.put("EmbossingFilter", new EmbossingFilter());
         filters.put("SepiaFilter", new SepiaFilter());
         filters.put("FloydSteinbergDitheringFilter", new FloydSteinbergDithering());
+        filters.put("SharpnessFilter", new SharpnessFilter());
+        filters.put("WaterColorFilter", new WaterColorFilter());
 
         instruments.put("FitToScreenInstrument", new FitToScreen());
         instruments.put("RotateInstrument", new RotateInstrument());
@@ -69,8 +70,12 @@ public class MainFrame extends JFrame
         SaveImage saveImage = new SaveImage(imagePane);
         GammaOptions gammaOptions = new GammaOptions((GammaCorrection) filters.get("GammaCorrectionFilter"));
         ContouringOptions contouringOptions = new ContouringOptions((ContouringFilter) filters.get("ContouringFilter"));
+        FloydDitheringOptions floydDitheringOption = new FloydDitheringOptions((FloydSteinbergDithering) filters.get("FloydSteinbergDitheringFilter"));
+        options.put("GammaOptions", gammaOptions);
+        options.put("ContouringOptions", contouringOptions);
+        options.put("FloydDitheringOptions", floydDitheringOption);
 
-        toolBar = new ToolBar(imagePane, loadImage, saveImage, gammaOptions, contouringOptions);
+        toolBar = new ToolBar(imagePane, loadImage, saveImage, options);
         add(toolBar, BorderLayout.NORTH);
 
         menu = new MenuBar(imagePane, loadImage, saveImage, filters, gammaOptions);
