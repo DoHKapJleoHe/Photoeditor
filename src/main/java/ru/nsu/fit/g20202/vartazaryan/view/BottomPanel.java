@@ -1,7 +1,5 @@
 package ru.nsu.fit.g20202.vartazaryan.view;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import ru.nsu.fit.g20202.vartazaryan.ImagePane;
 import ru.nsu.fit.g20202.vartazaryan.instruments.FitToScreen;
 import ru.nsu.fit.g20202.vartazaryan.instruments.Instrument;
@@ -15,6 +13,7 @@ public class BottomPanel extends JPanel
     private Map<String, Instrument> instruments;
     private ImagePane imagePane;
     private JButton fit;
+    private JButton full;
 
     public BottomPanel(ImagePane image, Map<String, Instrument> instruments)
     {
@@ -30,10 +29,13 @@ public class BottomPanel extends JPanel
         fit = new JButton("Fit");
         add(fit);
 
+        full = new JButton("Full Size");
+        add(full);
+
         scaleSpinner.addChangeListener(e -> {
             if(imagePane.getOriginalImage() != null)
             {
-                //imagePane.zoomImage((Integer) scaleSpinner.getValue());
+
             }
             else
             {
@@ -43,9 +45,11 @@ public class BottomPanel extends JPanel
 
         fit.addActionListener(e -> {
             FitToScreen fitToScreen = (FitToScreen) instruments.get("FitToScreenInstrument");
-            fitToScreen.setWidth(imagePane.getWidth());
-            fitToScreen.setHeight(imagePane.getHeight());
             imagePane.fitImage();
+        });
+
+        full.addActionListener(e -> {
+            imagePane.backToFullSize();
         });
     }
 }

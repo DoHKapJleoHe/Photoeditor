@@ -3,10 +3,7 @@ package ru.nsu.fit.g20202.vartazaryan.view;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import ru.nsu.fit.g20202.vartazaryan.ImagePane;
-import ru.nsu.fit.g20202.vartazaryan.options.ContouringOptions;
-import ru.nsu.fit.g20202.vartazaryan.options.FloydDitheringOptions;
-import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
-import ru.nsu.fit.g20202.vartazaryan.options.Option;
+import ru.nsu.fit.g20202.vartazaryan.options.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -23,6 +20,7 @@ public class ToolBar extends JToolBar
     private GammaOptions gammaOptions;
     private ContouringOptions contouringOptions;
     private FloydDitheringOptions floydDitheringOptions;
+    private GaussBlurOptions gaussBlurOptions;
 
     private JButton loadButton;
     private JButton saveButton;
@@ -35,6 +33,8 @@ public class ToolBar extends JToolBar
     private JButton embossing;
     private JButton dithering;
     private JButton watercolor;
+    private JButton glitch;
+    private JButton gaussBlur;
     private JButton rotateButton;
     private JButton returnButton;
 
@@ -46,6 +46,7 @@ public class ToolBar extends JToolBar
         this.gammaOptions = (GammaOptions) options.get("GammaOptions");
         this.contouringOptions = (ContouringOptions) options.get("ContouringOptions");
         this.floydDitheringOptions = (FloydDitheringOptions) options.get("FloydDitheringOptions");
+        this.gaussBlurOptions = (GaussBlurOptions) options.get("GaussBlurOptions");
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -66,6 +67,8 @@ public class ToolBar extends JToolBar
         ImageIcon ditheringIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/dithering.png")));
         ImageIcon sharpnessIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/sharpness.png")));
         ImageIcon brushIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/paintbrush.png")));
+        ImageIcon glitchIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/glitch.png")));
+        ImageIcon gaussIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/gauss.png")));
 
 
         loadButton = createButton("Load Image", loadIcon);
@@ -97,11 +100,17 @@ public class ToolBar extends JToolBar
         embossing = createButton("Embossing Filter", embossingIcon);
         add(embossing);
 
+        dithering = createButton("Dithering", ditheringIcon);
+        add(dithering);
+
         watercolor = createButton("WatercolorFilter", brushIcon);
         add(watercolor);
 
-        dithering = createButton("Dithering", ditheringIcon);
-        add(dithering);
+        glitch = createButton("Glitch", glitchIcon);
+        add(glitch);
+
+        gaussBlur = createButton("Gauss blur", gaussIcon);
+        add(gaussBlur);
 
         add(new JSeparator(SwingConstants.VERTICAL));
 
@@ -198,6 +207,23 @@ public class ToolBar extends JToolBar
 
         watercolor.addActionListener(e -> {
             imagePane.applyFilter("WaterColorFilter");
+        });
+
+        glitch.addActionListener(e -> {
+            imagePane.applyFilter("GlitchFilter");
+        });
+
+        gaussBlur.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    gaussBlurOptions,
+                    "Blur options",
+                    JOptionPane.OK_CANCEL_OPTION);
+
+            if(confirm == JOptionPane.OK_OPTION)
+            {
+                imagePane.applyFilter("GaussBlurFilter");
+            }
         });
     }
 

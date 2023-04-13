@@ -39,9 +39,9 @@ public class WaterColorFilter implements IFilter
         Arrays.sort(greenArr);
         Arrays.sort(blueArr);
 
-        int medianRed = redArr[13];
-        int medianGreen = greenArr[13];
-        int medianBlue = blueArr[13];
+        int medianRed = redArr[12];
+        int medianGreen = greenArr[12];
+        int medianBlue = blueArr[12];
         int res = 255 << 24 | medianRed << 16 | medianGreen << 8 | medianBlue;
 
         return res;
@@ -75,17 +75,23 @@ public class WaterColorFilter implements IFilter
                 {
                     for(int j = -1; j <= 1; j++)
                     {
+                        int curColor = 0;
+
                         if(x+i > 0 && y+j > 0 && x+i < image.getWidth() && y+j < image.getHeight())
                         {
-                            int curColor = newImage.getRGB(x + i, y + j);
-                            int red = (curColor >> 16) & 0xFF;
-                            int green = (curColor >> 8) & 0xFF;
-                            int blue = curColor & 0xFF;
-
-                            resR += red * kernel[i+1][j+1];
-                            resG += green * kernel[i+1][j+1];
-                            resB += blue * kernel[i+1][j+1];
+                            curColor = newImage.getRGB(x + i, y + j);
                         }
+                        else
+                        {
+                            curColor = newImage.getRGB(x, y);
+                        }
+                        int red = (curColor >> 16) & 0xFF;
+                        int green = (curColor >> 8) & 0xFF;
+                        int blue = curColor & 0xFF;
+
+                        resR += red * kernel[i+1][j+1];
+                        resG += green * kernel[i+1][j+1];
+                        resB += blue * kernel[i+1][j+1];
                     }
                 }
 

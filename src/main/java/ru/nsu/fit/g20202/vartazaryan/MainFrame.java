@@ -57,6 +57,8 @@ public class MainFrame extends JFrame
         filters.put("FloydSteinbergDitheringFilter", new FloydSteinbergDithering());
         filters.put("SharpnessFilter", new SharpnessFilter());
         filters.put("WaterColorFilter", new WaterColorFilter());
+        filters.put("GlitchFilter", new GlitchFilter());
+        filters.put("GaussBlurFilter", new GaussBlur());
 
         instruments.put("FitToScreenInstrument", new FitToScreen());
         instruments.put("RotateInstrument", new RotateInstrument());
@@ -71,14 +73,17 @@ public class MainFrame extends JFrame
         GammaOptions gammaOptions = new GammaOptions((GammaCorrection) filters.get("GammaCorrectionFilter"));
         ContouringOptions contouringOptions = new ContouringOptions((ContouringFilter) filters.get("ContouringFilter"));
         FloydDitheringOptions floydDitheringOption = new FloydDitheringOptions((FloydSteinbergDithering) filters.get("FloydSteinbergDitheringFilter"));
+        GaussBlurOptions gaussBlurOptions = new GaussBlurOptions((GaussBlur) filters.get("GaussBlurFilter"));
+
         options.put("GammaOptions", gammaOptions);
         options.put("ContouringOptions", contouringOptions);
         options.put("FloydDitheringOptions", floydDitheringOption);
+        options.put("GaussBlurOptions", gaussBlurOptions);
 
         toolBar = new ToolBar(imagePane, loadImage, saveImage, options);
         add(toolBar, BorderLayout.NORTH);
 
-        menu = new MenuBar(imagePane, loadImage, saveImage, filters, gammaOptions);
+        menu = new MenuBar(imagePane, loadImage, saveImage, filters, gammaOptions, (FitToScreen) instruments.get("FitToScreenInstrument"));
         setJMenuBar(menu);
 
         rotateOptions = new RotateOption(imagePane);

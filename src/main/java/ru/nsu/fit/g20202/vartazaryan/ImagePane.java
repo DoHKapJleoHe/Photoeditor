@@ -22,7 +22,11 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     private int originalImageWidth;
     private int originalImageHeight;
 
+    private int fittedImageWidth;
+    private int fittedImageHeight;
+
     private BufferedImage originalImage;
+    private BufferedImage fittedImage;
     @Getter
     private BufferedImage filteredImage;
     @Setter
@@ -59,6 +63,8 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
         scrollPane = sp;
         scrollPane.setViewportView(this);
+        scrollPane.setWheelScrollingEnabled(false);
+        scrollPane.setDoubleBuffered(true);
         scrollPane.setViewportBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(INDENT, INDENT, INDENT, INDENT), // this creates indent between frame and image area
                 BorderFactory.createDashedBorder(Color.BLACK, 5, 2)));
@@ -66,10 +72,12 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         label = new JLabel("Place for image");
         add(label);
 
-        panelSize = getVisibleRect().getSize();
+        //panelSize = getVisibleRect().getSize();
+        scrollPane.revalidate();
+
         addMouseListener(this);
+        addMouseMotionListener(this);
         addMouseWheelListener(this);
-        scrollPane.setViewportView(this);
     }
 
     public void applyFilter(String filter)
@@ -77,7 +85,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         if(originalImage != null)
         {
             IFilter curFilter = filters.get(filter);
-            filteredImage = curFilter.applyFilter(originalImage);
+            filteredImage = curFilter.applyFilter(fittedImage);
             showFiltered = 1;
 
             repaint();
@@ -98,6 +106,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         label.setVisible(false);
 
         originalImage = newImage;
+        fittedImage = newImage;
         g2d = newImage.createGraphics();
 
         width = newImage.getWidth();
@@ -115,13 +124,12 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     {
         if(originalImage != null)
         {
-            //originalImage = instruments.get("FitToScreenInstrument").apply(originalImage);
-            //System.out.println("Resized");
-            //this.revalidate();
-            double coef = Math.min(getWidth() / originalImageWidth, getHeight() / originalImageHeight);
-            System.out.println(coef);
-            originalImageWidth = (int) (originalImageWidth*coef);
-            originalImageHeight = (int) (originalImageHeight*coef);
+            int width = scrollPane.getHorizontalScrollBar().getWidth();
+            int height = scrollPane.getVerticalScrollBar().getHeight();
+            FitToScreen fit = (FitToScreen) instruments.get("FitToScreenInstrument");
+            fit.setHeight(height);
+            fit.setWidth(width);
+            fittedImage = fit.apply(originalImage);
             showFiltered = 0;
             repaint();
         }
@@ -130,6 +138,14 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
             JOptionPane.showMessageDialog(this, "Image has not been selected!", "Error", JOptionPane.QUESTION_MESSAGE);
         }
 
+    }
+
+    public void backToFullSize()
+    {
+        fittedImage = originalImage;
+        //g2d = fittedImage.createGraphics();
+        //g2d.drawImage(originalImage, 0, 0, originalImageWidth, originalImageHeight, this);
+        repaint();
     }
 
     public BufferedImage getOriginalImage() {
@@ -154,7 +170,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         if(originalImage != null)
         {
             rotateInstrument.setDegree(degree);
-            originalImage = rotateInstrument.apply(originalImage);
+            fittedImage = rotateInstrument.apply(fittedImage);
             showFiltered = 0;
             repaint();
         }
@@ -185,11 +201,9 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
 
         if(showFiltered == 0)
         {
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2d.drawImage(originalImage, 0, 0, originalImageWidth, originalImageHeight, this);
+            g.drawImage(fittedImage, 0, 0, this);
         }
-        else
+        else if(showFiltered == 1)
         {
             g.drawImage(filteredImage, 0, 0, this);
         }
@@ -222,7 +236,13 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     @Override
     public void mouseDragged(MouseEvent e)
     {
+        Point move = scrollPane.getViewport().getViewPosition();
+        move.x += (origin.x - e.getX());
+        move.y += (origin.y - e.getY());
 
+        scrollPane.getHorizontalScrollBar().setValue(move.x);
+        scrollPane.getVerticalScrollBar().setValue(move.y);
+        scrollPane.repaint();
     }
 
     @Override

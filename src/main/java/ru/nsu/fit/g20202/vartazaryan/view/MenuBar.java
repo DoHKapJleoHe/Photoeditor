@@ -1,10 +1,9 @@
 package ru.nsu.fit.g20202.vartazaryan.view;
 
-import com.formdev.flatlaf.FlatDarculaLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import ru.nsu.fit.g20202.vartazaryan.ImagePane;
-import ru.nsu.fit.g20202.vartazaryan.filters.GammaCorrection;
 import ru.nsu.fit.g20202.vartazaryan.filters.IFilter;
+import ru.nsu.fit.g20202.vartazaryan.instruments.FitToScreen;
+import ru.nsu.fit.g20202.vartazaryan.instruments.Instrument;
 import ru.nsu.fit.g20202.vartazaryan.options.GammaOptions;
 
 import javax.swing.*;
@@ -19,11 +18,13 @@ public class MenuBar extends JMenuBar
     private LoadImage imageLoader;
     private SaveImage imageSaver;
     private GammaOptions gammaOptions;
+    private FitToScreen fitToScreen;
     private Map<String, IFilter> filters;
 
-    public MenuBar(ImagePane image, LoadImage loadImage, SaveImage saveImage, Map<String, IFilter> filters, GammaOptions gammaOptions)
+    public MenuBar(ImagePane image, LoadImage loadImage, SaveImage saveImage, Map<String, IFilter> filters, GammaOptions gammaOptions, FitToScreen fitToScreenInstrument)
     {
         this.filters = filters;
+        fitToScreen = fitToScreenInstrument;
         imagePane = image;
         imageLoader = loadImage;
         imageSaver= saveImage;
@@ -58,6 +59,33 @@ public class MenuBar extends JMenuBar
         operatorsGroup.add(sobel);
         operatorsGroup.add(robert);
 
+        JMenu interpolationType = new JMenu("Interpolation");
+        edit.add(interpolationType);
+        ButtonGroup type = new ButtonGroup();
+        JRadioButtonMenuItem bilinear = new JRadioButtonMenuItem("Bilinear");
+        bilinear.setSelected(true);
+        type.add(bilinear);
+        interpolationType.add(bilinear);
+
+        JRadioButtonMenuItem bicubic = new JRadioButtonMenuItem("Bicubic");
+        type.add(bicubic);
+        interpolationType.add(bicubic);
+
+        JMenu about = new JMenu("About");
+        add(about);
+
+        JMenuItem aboutItem = new JMenuItem("About");
+        about.add(aboutItem);
+
+        aboutItem.addActionListener(e -> {
+            JOptionPane.showConfirmDialog(
+                    null,
+                    "Author: Vartazaryan Eduard Araevich, FIT NSU",
+                    "About",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.PLAIN_MESSAGE);
+        });
+
         loadItem.addActionListener(e -> {
             try
             {
@@ -81,6 +109,14 @@ public class MenuBar extends JMenuBar
                     "Gamma options",
                     JOptionPane.OK_CANCEL_OPTION
             );
+        });
+
+        bicubic.addActionListener(e -> {
+            fitToScreen.setType(3);
+        });
+
+        bilinear.addActionListener(e -> {
+            fitToScreen.setType(2);
         });
     }
 }

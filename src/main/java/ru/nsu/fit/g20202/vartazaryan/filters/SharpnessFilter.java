@@ -11,9 +11,9 @@ public class SharpnessFilter implements IFilter
     {
         BufferedImage newImage = new BufferedImage(image.getWidth(), image.getHeight(), image.getType());
 
-        for(int x = 1; x < image.getWidth() - 1; x++)
+        for(int x = 0; x < image.getWidth(); x++)
         {
-            for(int y = 1; y < image.getHeight() - 1; y++)
+            for(int y = 0; y < image.getHeight(); y++)
             {
                 int resR = 0, resG = 0, resB = 0;
 
@@ -21,14 +21,24 @@ public class SharpnessFilter implements IFilter
                 {
                     for(int j = -1; j <= 1; j++)
                     {
-                        int curColor = image.getRGB(x + i, y + j);
+                        int curColor = 0;
+
+                        if(x+i > 0 && y+j > 0 && x+i < image.getWidth() && y+j < image.getHeight())
+                        {
+                            curColor = image.getRGB(x + i, y + j);
+                        }
+                        else
+                        {
+                            curColor = image.getRGB(x, y);
+                        }
+
                         int red = (curColor >> 16) & 0xFF;
                         int green = (curColor >> 8) & 0xFF;
                         int blue = curColor & 0xFF;
 
-                        resR += red * kernel[i+1][j+1];
-                        resG += green * kernel[i+1][j+1];
-                        resB += blue * kernel[i+1][j+1];
+                        resR += red * kernel[i + 1][j + 1];
+                        resG += green * kernel[i + 1][j + 1];
+                        resB += blue * kernel[i + 1][j + 1];
                     }
                 }
 

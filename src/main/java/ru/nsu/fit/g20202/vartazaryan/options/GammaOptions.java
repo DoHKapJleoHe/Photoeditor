@@ -19,13 +19,13 @@ public class GammaOptions extends JPanel implements Option
 
         this.gammaCorrection = gammaCorrection;
 
-        gammaSlider = new JSlider(0, 10);
+        gammaSlider = new JSlider(0, 100);
         gammaSlider.setMajorTickSpacing(1);
         gammaSlider.setValue(10);
 
         add(gammaSlider);
 
-        SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(10, 0, 10, 1);
+        SpinnerNumberModel spinnerNumberModel = new SpinnerNumberModel(10, 0, 100, 1);
         gammaSpinner = new JSpinner(spinnerNumberModel);
         add(gammaSpinner);
 
@@ -36,9 +36,9 @@ public class GammaOptions extends JPanel implements Option
         });
 
         gammaSpinner.addChangeListener(e -> {
-            if((int)gammaSpinner.getValue() > 10)
+            if((int)gammaSpinner.getValue() > 100)
             {
-                gammaSpinner.setValue(10);
+                gammaSpinner.setValue(100);
             }
             gammaSlider.setValue((int)gammaSpinner.getValue());
         });

@@ -20,14 +20,13 @@ public class FitToScreen implements Instrument
     @Override
     public BufferedImage apply(BufferedImage image)
     {
-        System.out.println("Width= "+width+" Height= "+height);
-        double coef = Math.min(width / image.getWidth(), height / image.getHeight());
+        double coef = Math.min((double) width / (double)image.getWidth(), (double)height / (double)image.getHeight());
+        System.out.println(coef);
 
-        BufferedImage newImage = new BufferedImage((int)(image.getWidth() * coef), (int)(image.getHeight() * coef), image.getType());
+        //BufferedImage newImage = new BufferedImage((int)(image.getWidth() * coef), (int)(image.getHeight() * coef), image.getType());
         AffineTransform fit = AffineTransform.getScaleInstance(coef, coef);
-        AffineTransformOp fitOp = new AffineTransformOp(fit, AffineTransformOp.TYPE_BILINEAR);
-        fitOp.filter(image, newImage);
+        AffineTransformOp fitOp = new AffineTransformOp(fit, type);
 
-        return newImage;
+        return fitOp.filter(image, null);
     }
 }
