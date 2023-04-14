@@ -55,6 +55,7 @@ public class MainFrame extends JFrame
         filters.put("EmbossingFilter", new EmbossingFilter());
         filters.put("SepiaFilter", new SepiaFilter());
         filters.put("FloydSteinbergDitheringFilter", new FloydSteinbergDithering());
+        filters.put("OrderedDitheringFilter", new OrderedDithering());
         filters.put("SharpnessFilter", new SharpnessFilter());
         filters.put("WaterColorFilter", new WaterColorFilter());
         filters.put("GlitchFilter", new GlitchFilter());

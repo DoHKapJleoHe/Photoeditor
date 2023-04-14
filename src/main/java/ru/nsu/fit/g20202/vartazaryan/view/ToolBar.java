@@ -32,6 +32,7 @@ public class ToolBar extends JToolBar
     private JButton sepia;
     private JButton embossing;
     private JButton dithering;
+    private JButton dithering2;
     private JButton watercolor;
     private JButton glitch;
     private JButton gaussBlur;
@@ -100,8 +101,11 @@ public class ToolBar extends JToolBar
         embossing = createButton("Embossing Filter", embossingIcon);
         add(embossing);
 
-        dithering = createButton("Dithering", ditheringIcon);
+        dithering = createButton("Floyd Dithering", ditheringIcon);
         add(dithering);
+
+        dithering2 = createButton("Ordered Dithering", ditheringIcon);
+        add(dithering2);
 
         watercolor = createButton("WatercolorFilter", brushIcon);
         add(watercolor);
@@ -203,6 +207,10 @@ public class ToolBar extends JToolBar
             {
                 imagePane.applyFilter("FloydSteinbergDitheringFilter");
             }
+        });
+
+        dithering2.addActionListener(e -> {
+            imagePane.applyFilter("OrderedDitheringFilter");
         });
 
         watercolor.addActionListener(e -> {

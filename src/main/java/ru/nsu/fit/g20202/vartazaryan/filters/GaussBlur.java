@@ -9,7 +9,7 @@ public class GaussBlur implements IFilter
     @Setter
     private double sigma;
     @Setter
-    private int kernelSize = 7; //
+    private int kernelSize = 3;
     private double[][] kernel;
 
     private void createKernel()

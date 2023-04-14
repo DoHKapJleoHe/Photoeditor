@@ -28,6 +28,7 @@ public class GaussBlurOptions extends JPanel implements Option
         add(label1);
         JSlider matrixSizeSlider = new JSlider(3, 11, 3);
         matrixSizeSlider.setMajorTickSpacing(2);
+        matrixSizeSlider.setMinorTickSpacing(2);
         add(matrixSizeSlider);
 
         SpinnerNumberModel matrixNumberModel = new SpinnerNumberModel(3, 3, 11, 2);
