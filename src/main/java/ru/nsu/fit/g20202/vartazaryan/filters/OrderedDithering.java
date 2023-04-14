@@ -8,11 +8,11 @@ import java.awt.image.BufferedImage;
 public class OrderedDithering implements IFilter
 {
     @Setter
-    private int redQuantizationNum = 2;
+    private int redQuantizationNum = 4;
     @Setter
-    private int greenQuantizationNum = 2;
+    private int greenQuantizationNum = 4;
     @Setter
-    private int blueQuantizationNum = 2;
+    private int blueQuantizationNum = 4;
 
     private int[] redPalette;
     private int[] greenPalette;

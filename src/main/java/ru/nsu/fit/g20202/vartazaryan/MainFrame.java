@@ -75,11 +75,13 @@ public class MainFrame extends JFrame
         ContouringOptions contouringOptions = new ContouringOptions((ContouringFilter) filters.get("ContouringFilter"));
         FloydDitheringOptions floydDitheringOption = new FloydDitheringOptions((FloydSteinbergDithering) filters.get("FloydSteinbergDitheringFilter"));
         GaussBlurOptions gaussBlurOptions = new GaussBlurOptions((GaussBlur) filters.get("GaussBlurFilter"));
+        OrderedDitheringOptions orderedDitheringOptions = new OrderedDitheringOptions((OrderedDithering) filters.get("OrderedDitheringFilter"));
 
         options.put("GammaOptions", gammaOptions);
         options.put("ContouringOptions", contouringOptions);
         options.put("FloydDitheringOptions", floydDitheringOption);
         options.put("GaussBlurOptions", gaussBlurOptions);
+        options.put("OrderedDitheringOptions", orderedDitheringOptions);
 
         toolBar = new ToolBar(imagePane, loadImage, saveImage, options);
         add(toolBar, BorderLayout.NORTH);

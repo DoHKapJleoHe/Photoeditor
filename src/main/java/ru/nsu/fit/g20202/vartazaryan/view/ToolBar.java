@@ -3,6 +3,7 @@ package ru.nsu.fit.g20202.vartazaryan.view;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import ru.nsu.fit.g20202.vartazaryan.ImagePane;
+import ru.nsu.fit.g20202.vartazaryan.filters.OrderedDithering;
 import ru.nsu.fit.g20202.vartazaryan.options.*;
 
 import javax.imageio.ImageIO;
@@ -21,6 +22,7 @@ public class ToolBar extends JToolBar
     private ContouringOptions contouringOptions;
     private FloydDitheringOptions floydDitheringOptions;
     private GaussBlurOptions gaussBlurOptions;
+    private OrderedDitheringOptions orderedDitheringOptions;
 
     private JButton loadButton;
     private JButton saveButton;
@@ -48,6 +50,7 @@ public class ToolBar extends JToolBar
         this.contouringOptions = (ContouringOptions) options.get("ContouringOptions");
         this.floydDitheringOptions = (FloydDitheringOptions) options.get("FloydDitheringOptions");
         this.gaussBlurOptions = (GaussBlurOptions) options.get("GaussBlurOptions");
+        this.orderedDitheringOptions = (OrderedDitheringOptions) options.get("OrderedDitheringOptions");
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -210,7 +213,17 @@ public class ToolBar extends JToolBar
         });
 
         dithering2.addActionListener(e -> {
-            imagePane.applyFilter("OrderedDitheringFilter");
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    orderedDitheringOptions,
+                    "Dithering options",
+                    JOptionPane.OK_CANCEL_OPTION
+            );
+
+            if(confirm == JOptionPane.OK_OPTION)
+            {
+                imagePane.applyFilter("OrderedDitheringFilter");
+            }
         });
 
         watercolor.addActionListener(e -> {
