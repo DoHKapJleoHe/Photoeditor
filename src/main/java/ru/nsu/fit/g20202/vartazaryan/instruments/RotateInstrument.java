@@ -2,6 +2,7 @@ package ru.nsu.fit.g20202.vartazaryan.instruments;
 
 import lombok.Setter;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class RotateInstrument implements Instrument
@@ -21,17 +22,20 @@ public class RotateInstrument implements Instrument
         double sin = Math.abs(Math.sin(angle));
         double cos = Math.abs(Math.cos(angle));
 
-        int newSize = originalImage.getWidth()*originalImage.getWidth() + originalImage.getHeight()*originalImage.getHeight();
-        newSize = (int) Math.sqrt(newSize);
+        int newH = (int) (originalImage.getWidth()*sin + originalImage.getHeight()*cos);
+        int newW = (int) (originalImage.getWidth()*cos + originalImage.getHeight()*sin);
 
-        BufferedImage newImage = new BufferedImage(newSize, newSize, originalImage.getType());
+        BufferedImage newImage = new BufferedImage(newW, newH, originalImage.getType());
+        Graphics2D g2d = newImage.createGraphics();
+        g2d.setColor(Color.WHITE);
+        g2d.fillRect(0, 0, newW, newH);
 
-        for(int x = 0; x < originalImage.getWidth(); x++)
+        for(int x = 0; x < newW; x++)
         {
-            for(int y = 0; y < originalImage.getHeight(); y++)
+            for(int y = 0; y < newH; y++)
             {
-                int newX = (int) ((x - originalImage.getWidth()/2)*cos - (y - originalImage.getHeight()/2)*sin) + originalImage.getWidth() / 2;
-                int newY = (int) ((x - originalImage.getWidth()/2)*sin + (y - originalImage.getHeight()/2)*cos) + originalImage.getHeight() / 2;
+                int newX = (int) ((x - newW/2)*cos - (y - newH/2)*sin) + originalImage.getWidth() / 2;
+                int newY = (int) ((x - newW/2)*sin + (y - newH/2)*cos) + originalImage.getHeight() / 2;
 
                 int color = 0;
                 if(newX > 0 && newY > 0 && newX < originalImage.getWidth() && newY < originalImage.getHeight())
