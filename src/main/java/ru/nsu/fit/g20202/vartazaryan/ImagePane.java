@@ -143,8 +143,6 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     public void backToFullSize()
     {
         fittedImage = originalImage;
-        //g2d = fittedImage.createGraphics();
-        //g2d.drawImage(originalImage, 0, 0, originalImageWidth, originalImageHeight, this);
         repaint();
     }
 

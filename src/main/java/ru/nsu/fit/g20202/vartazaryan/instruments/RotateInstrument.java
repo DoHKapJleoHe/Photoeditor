@@ -19,11 +19,11 @@ public class RotateInstrument implements Instrument
     {
         System.out.println(degree);
         double angle = Math.toRadians(degree);
-        double sin = Math.abs(Math.sin(angle));
-        double cos = Math.abs(Math.cos(angle));
+        double sin = Math.sin(angle);
+        double cos = Math.cos(angle);
 
-        int newH = (int) (originalImage.getWidth()*sin + originalImage.getHeight()*cos);
-        int newW = (int) (originalImage.getWidth()*cos + originalImage.getHeight()*sin);
+        int newH = (int) (originalImage.getWidth()*Math.abs(sin) + originalImage.getHeight()*Math.abs(cos));
+        int newW = (int) (originalImage.getWidth()*Math.abs(cos) + originalImage.getHeight()*Math.abs(sin));
 
         BufferedImage newImage = new BufferedImage(newW, newH, originalImage.getType());
         Graphics2D g2d = newImage.createGraphics();
