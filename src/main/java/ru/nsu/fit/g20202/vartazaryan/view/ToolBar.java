@@ -23,6 +23,7 @@ public class ToolBar extends JToolBar
     private FloydDitheringOptions floydDitheringOptions;
     private GaussBlurOptions gaussBlurOptions;
     private OrderedDitheringOptions orderedDitheringOptions;
+    private RotateOption rotateOption;
 
     private JButton loadButton;
     private JButton saveButton;
@@ -51,6 +52,7 @@ public class ToolBar extends JToolBar
         this.floydDitheringOptions = (FloydDitheringOptions) options.get("FloydDitheringOptions");
         this.gaussBlurOptions = (GaussBlurOptions) options.get("GaussBlurOptions");
         this.orderedDitheringOptions = (OrderedDitheringOptions) options.get("OrderedDitheringOptions");
+        this.rotateOption = (RotateOption) options.get("RotateOptions");
 
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -58,21 +60,21 @@ public class ToolBar extends JToolBar
         setRollover(false);
         setVisible(true);
 
-        ImageIcon blackWhiteIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/black&white.png")));
-        ImageIcon loadIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/load.png")));
-        ImageIcon saveIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/save.png")));
-        ImageIcon backIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/back.png")));
-        ImageIcon negativeIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/negative.png")));
-        ImageIcon gammaIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/gamma.png")));
-        ImageIcon rotateIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/rotate.png")));
-        ImageIcon contourIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/contour.png")));
-        ImageIcon sepiaIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/sepia.png")));
-        ImageIcon embossingIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/embossing.png")));
-        ImageIcon ditheringIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/dithering.png")));
-        ImageIcon sharpnessIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/sharpness.png")));
-        ImageIcon brushIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/paintbrush.png")));
-        ImageIcon glitchIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/glitch.png")));
-        ImageIcon gaussIcon = new ImageIcon(ImageIO.read(new File("src/main/recources/gauss.png")));
+        ImageIcon blackWhiteIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/black&white.png")));
+        ImageIcon loadIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/load.png")));
+        ImageIcon saveIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/save.png")));
+        ImageIcon backIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/back.png")));
+        ImageIcon negativeIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/negative.png")));
+        ImageIcon gammaIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/gamma.png")));
+        ImageIcon rotateIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/rotate.png")));
+        ImageIcon contourIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/contour.png")));
+        ImageIcon sepiaIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/sepia.png")));
+        ImageIcon embossingIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/embossing.png")));
+        ImageIcon ditheringIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/dithering.png")));
+        ImageIcon sharpnessIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/sharpness.png")));
+        ImageIcon brushIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/paintbrush.png")));
+        ImageIcon glitchIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/glitch.png")));
+        ImageIcon gaussIcon = new ImageIcon(ImageIO.read(new File("src/main/resources/gauss.png")));
 
 
         loadButton = createButton("Load Image", loadIcon);
@@ -151,7 +153,17 @@ public class ToolBar extends JToolBar
         });
 
         rotateButton.addActionListener(e -> {
-            imagePane.rotateImage(90);
+            int confirm = JOptionPane.showConfirmDialog(
+                    this,
+                    rotateOption,
+                    "Rotate options",
+                    JOptionPane.OK_CANCEL_OPTION
+            );
+
+            if(confirm == JOptionPane.OK_OPTION)
+            {
+                imagePane.rotateImage();
+            }
         });
 
         negative.addActionListener(e -> {

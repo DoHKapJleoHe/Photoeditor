@@ -49,8 +49,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     private Map<String, IFilter> filters;
 
     /*INSTRUMENTS*/
-    private RotateInstrument rotateInstrument = new RotateInstrument();
-    //private Zoom zoom = new Zoom();
+    private RotateInstrument rotateInstrument;
 
     Map<String, Instrument> instruments;
 
@@ -60,6 +59,7 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
     {
         this.filters = filters;
         this.instruments = instruments;
+        this.rotateInstrument = (RotateInstrument) instruments.get("RotateInstrument");
 
         scrollPane = sp;
         scrollPane.setViewportView(this);
@@ -165,34 +165,16 @@ public class ImagePane extends JPanel implements MouseListener, MouseMotionListe
         }
     }
 
-    public void rotateImage(int degree)
+    public void rotateImage()
     {
         if(originalImage != null)
         {
-            rotateInstrument.setDegree(degree);
-            fittedImage = rotateInstrument.apply(fittedImage);
+            fittedImage = rotateInstrument.apply(originalImage);
             showFiltered = 0;
             repaint();
         }
 
     }
-
-    /*public void zoomImage(int zoomCoef)
-    {
-        // bugged, needs fixes
-        zoom.setZoomCoef(zoomCoef);
-        if(showFiltered == 0)
-        {
-            filteredImage = zoom.apply(originalImage, originalImageWidth, originalImageHeight);
-            showFiltered = 1;
-            repaint();
-        }
-        else
-        {
-            filteredImage = zoom.apply(filteredImage, originalImageWidth, originalImageHeight);
-            repaint();
-        }
-    }*/
 
     @Override
     public void paintComponent(Graphics g)

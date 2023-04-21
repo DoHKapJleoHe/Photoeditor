@@ -71,6 +71,10 @@ public class MenuBar extends JMenuBar
         type.add(bicubic);
         interpolationType.add(bicubic);
 
+        JRadioButtonMenuItem nearNeighbour = new JRadioButtonMenuItem("Nearest Neighbour");
+        type.add(nearNeighbour);
+        interpolationType.add(nearNeighbour);
+
         JMenu about = new JMenu("About");
         add(about);
 
@@ -117,6 +121,10 @@ public class MenuBar extends JMenuBar
 
         bilinear.addActionListener(e -> {
             fitToScreen.setType(2);
+        });
+
+        nearNeighbour.addActionListener(e -> {
+            fitToScreen.setType(1);
         });
     }
 }

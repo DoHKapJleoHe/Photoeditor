@@ -30,12 +30,12 @@ public class ContouringOptions extends JPanel implements Option
             filter.setStatus(1);
         });
 
-        JSlider thresholdSlider = new JSlider(0, 30);
+        JSlider thresholdSlider = new JSlider(0, 100);
         thresholdSlider.setMajorTickSpacing(1);
         thresholdSlider.setValue(20);
         add(thresholdSlider);
 
-        SpinnerNumberModel thresholdSpinnerModel = new SpinnerNumberModel(20,0, 30, 1);
+        SpinnerNumberModel thresholdSpinnerModel = new SpinnerNumberModel(20,0, 100, 1);
         JSpinner thresholdSpinner = new JSpinner(thresholdSpinnerModel);
         add(thresholdSpinner);
 
@@ -46,9 +46,9 @@ public class ContouringOptions extends JPanel implements Option
         });
 
         thresholdSpinner.addChangeListener(e -> {
-            if((int)thresholdSpinner.getValue() > 30)
+            if((int)thresholdSpinner.getValue() > 100)
             {
-                thresholdSpinner.setValue(30);
+                thresholdSpinner.setValue(100);
             }
 
             int threshold = (int) thresholdSpinner.getValue();

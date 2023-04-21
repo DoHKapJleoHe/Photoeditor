@@ -24,7 +24,6 @@ public class MainFrame extends JFrame
 {
     private ImagePane imagePane;
     private JScrollPane imageScrollPane;
-    private RotateOption rotateOptions;
     private BottomPanel bottomOptions;
 
     private ToolBar toolBar;
@@ -40,7 +39,7 @@ public class MainFrame extends JFrame
         FlatLightLaf.setup();
         SwingUtilities.updateComponentTreeUI(this);
 
-        ImageIcon icon = new ImageIcon(ImageIO.read(new File("src/main/recources/AppIcon.png")));
+        ImageIcon icon = new ImageIcon(ImageIO.read(new File("src/main/resources/AppIcon.png")));
         setIconImage(icon.getImage());
 
         getContentPane().setBackground(Color.DARK_GRAY);
@@ -76,20 +75,20 @@ public class MainFrame extends JFrame
         FloydDitheringOptions floydDitheringOption = new FloydDitheringOptions((FloydSteinbergDithering) filters.get("FloydSteinbergDitheringFilter"));
         GaussBlurOptions gaussBlurOptions = new GaussBlurOptions((GaussBlur) filters.get("GaussBlurFilter"));
         OrderedDitheringOptions orderedDitheringOptions = new OrderedDitheringOptions((OrderedDithering) filters.get("OrderedDitheringFilter"));
+        RotateOption rotateOption = new RotateOption((RotateInstrument) instruments.get("RotateInstrument"));
 
         options.put("GammaOptions", gammaOptions);
         options.put("ContouringOptions", contouringOptions);
         options.put("FloydDitheringOptions", floydDitheringOption);
         options.put("GaussBlurOptions", gaussBlurOptions);
         options.put("OrderedDitheringOptions", orderedDitheringOptions);
+        options.put("RotateOptions", rotateOption);
 
         toolBar = new ToolBar(imagePane, loadImage, saveImage, options);
         add(toolBar, BorderLayout.NORTH);
 
         menu = new MenuBar(imagePane, loadImage, saveImage, filters, gammaOptions, (FitToScreen) instruments.get("FitToScreenInstrument"));
         setJMenuBar(menu);
-
-        rotateOptions = new RotateOption(imagePane);
 
         bottomOptions = new BottomPanel(imagePane, instruments);
         add(bottomOptions, BorderLayout.SOUTH);

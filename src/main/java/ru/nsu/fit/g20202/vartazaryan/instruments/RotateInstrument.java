@@ -2,33 +2,47 @@ package ru.nsu.fit.g20202.vartazaryan.instruments;
 
 import lombok.Setter;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public class RotateInstrument implements Instrument
 {
-    @Setter
-    private int degree;
+    private int degree = 20;
+
+    public void setDegree(int deg)
+    {
+        this.degree = deg;
+    }
 
     @Override
     public BufferedImage apply(BufferedImage originalImage)
     {
-        double sin = Math.abs(Math.sin(Math.toRadians(degree)));
-        double cos = Math.abs(Math.cos(Math.toRadians(degree)));
+        System.out.println(degree);
+        double angle = Math.toRadians(degree);
+        double sin = Math.abs(Math.sin(angle));
+        double cos = Math.abs(Math.cos(angle));
 
-        // using rotation matrix
-        int newWidth = (int) Math.floor((double)originalImage.getWidth() * cos + (double)originalImage.getHeight() * sin);
-        int newHeight = (int) Math.floor((double)originalImage.getHeight() * cos + (double)originalImage.getWidth() * sin);
+        int newSize = originalImage.getWidth()*originalImage.getWidth() + originalImage.getHeight()*originalImage.getHeight();
+        newSize = (int) Math.sqrt(newSize);
 
-        BufferedImage rotatedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2d = rotatedImage.createGraphics();
-        g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, newWidth, newHeight);
-        g2d.translate(newWidth/2, newHeight/2);
-        g2d.rotate(Math.toRadians(degree));
-        g2d.translate(-originalImage.getWidth()/2, -originalImage.getHeight()/2);
-        g2d.drawImage(originalImage, 0, 0, null);
+        BufferedImage newImage = new BufferedImage(newSize, newSize, originalImage.getType());
 
-        return rotatedImage;
+        for(int x = 0; x < originalImage.getWidth(); x++)
+        {
+            for(int y = 0; y < originalImage.getHeight(); y++)
+            {
+                int newX = (int) ((x - originalImage.getWidth()/2)*cos - (y - originalImage.getHeight()/2)*sin) + originalImage.getWidth() / 2;
+                int newY = (int) ((x - originalImage.getWidth()/2)*sin + (y - originalImage.getHeight()/2)*cos) + originalImage.getHeight() / 2;
+
+                int color = 0;
+                if(newX > 0 && newY > 0 && newX < originalImage.getWidth() && newY < originalImage.getHeight())
+                    color = originalImage.getRGB(newX, newY);
+                else
+                    color = -1;
+
+                newImage.setRGB(x, y, color);
+            }
+        }
+
+        return newImage;
     }
 }
