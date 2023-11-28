@@ -6,11 +6,16 @@ Filters: black&white, negative, sharpness, gamma, 2 types of contouring, sepia, 
 
 1) Black&white filter:
 ![image](https://github.com/DoHKapJleoHe/Photoeditor/assets/91648774/4f5fa4ed-ec05-4790-b3d1-28cd973cedac)
-2) Neagative filter:
+
+
+
+
+
+3) Neagative filter:
 ![image](https://github.com/DoHKapJleoHe/Photoeditor/assets/91648774/4367b7c9-cb3f-4d4f-a37a-fe1a48c722bf)
-3) Sharpness filter:
+4) Sharpness filter:
 ![image](https://github.com/DoHKapJleoHe/Photoeditor/assets/91648774/c0270e96-d712-4ac3-9a05-879f5503fa3c)
-4) Gamma filter:
+5) Gamma filter:
 ![image](https://github.com/DoHKapJleoHe/Photoeditor/assets/91648774/68acc63a-d681-4185-b9ac-d285b3fbd460)
 5)Contouring filter:
 ![image](https://github.com/DoHKapJleoHe/Photoeditor/assets/91648774/7499a3a2-4359-4587-895f-676e802e73a9)
